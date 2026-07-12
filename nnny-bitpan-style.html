@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" class="text-zinc-950 antialiased">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Never Not New York — Never not home.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    container: { center: true, padding: '1.5rem', screens: { '2xl': '1400px' } },
+    extend: {
+      fontFamily: {
+        sans: ['"DM Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', 'ui-serif', 'Georgia', 'serif'],
+      },
+    },
+  },
+};
+</script>
+<style>
+  html { font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif; }
+  body { background:#fff; }
+  .font-serif-italic { font-family:"Playfair Display", serif; font-style:italic; }
+  /* hide scrollbars on carousels */
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+  .track { scroll-behavior:smooth; }
+  /* marquee */
+  @keyframes marquee { from { transform:translateX(0);} to { transform:translateX(-50%);} }
+  .marquee { display:flex; width:max-content; animation:marquee 32s linear infinite; }
+  .marquee:hover { animation-play-state:paused; }
+
+  /* ---------- Scroll-reveal ---------- */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1);
+    will-change: opacity, transform;
+  }
+  [data-reveal].is-visible { opacity: 1; transform: none; }
+  /* staggered children */
+  [data-reveal-stagger] > * {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  }
+  [data-reveal-stagger].is-visible > * { opacity: 1; transform: none; }
+  [data-reveal-stagger].is-visible > *:nth-child(1){ transition-delay:.00s }
+  [data-reveal-stagger].is-visible > *:nth-child(2){ transition-delay:.08s }
+  [data-reveal-stagger].is-visible > *:nth-child(3){ transition-delay:.16s }
+  [data-reveal-stagger].is-visible > *:nth-child(4){ transition-delay:.24s }
+  [data-reveal-stagger].is-visible > *:nth-child(5){ transition-delay:.32s }
+  [data-reveal-stagger].is-visible > *:nth-child(6){ transition-delay:.40s }
+
+  /* ---------- Hero intro (on load) ---------- */
+  @keyframes heroIn { from { opacity:0; transform:translateY(40px);} to { opacity:1; transform:none; } }
+  @keyframes heroImg { from { opacity:0; transform:scale(1.08);} to { opacity:1; transform:scale(1);} }
+  [data-hero] { opacity:0; animation:heroIn .95s cubic-bezier(0.22,1,0.36,1) forwards; }
+  [data-hero="1"]{ animation-delay:.15s } [data-hero="2"]{ animation-delay:.30s }
+  [data-hero="3"]{ animation-delay:.48s } [data-hero="4"]{ animation-delay:.62s }
+  .hero-img { animation:heroImg 1.4s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+  /* ---------- Header on scroll ---------- */
+  header { transition: box-shadow .35s ease, padding .35s ease, background-color .35s ease; }
+  header.scrolled { box-shadow: 0 1px 24px rgba(0,0,0,0.06); }
+  header.scrolled nav { padding-top:0.5rem; padding-bottom:0.5rem; }
+
+  /* ---------- Card & image hover polish ---------- */
+  .track img, .group\/prd img { transition: transform .6s cubic-bezier(0.22,1,0.36,1); }
+
+  /* ---------- Underline link sweep ---------- */
+  .link-sweep { background-image: linear-gradient(currentColor,currentColor);
+    background-size:0% 1px; background-position:0 100%; background-repeat:no-repeat;
+    transition: background-size .4s cubic-bezier(0.22,1,0.36,1); }
+  .link-sweep:hover { background-size:100% 1px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],[data-reveal-stagger] > *,[data-hero],.hero-img{ opacity:1 !important; transform:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body class="text-zinc-950">
+
+<!-- ===================== HEADER ===================== -->
+<header class="group z-30 w-full sticky top-0 bg-white/90 backdrop-blur">
+  <div class="container">
+    <nav class="flex items-center justify-between border-b border-zinc-950/10 py-2">
+      <div class="flex lg:flex-1">
+        <a href="#" class="-m-1.5 p-1.5 flex items-center">
+          <img src="logo.png" alt="Never Not New York" class="h-14 w-auto">
+        </a>
+      </div>
+      <div class="hidden lg:flex lg:gap-x-8 text-sm uppercase tracking-wide">
+        <a href="#objects" class="hover:text-zinc-500 transition">Shop</a>
+        <a href="#passengers" class="hover:text-zinc-500 transition">Stories</a>
+        <a href="#making" class="hover:text-zinc-500 transition">About</a>
+      </div>
+      <div class="flex flex-1 justify-end items-center gap-x-5 sm:gap-x-6 text-sm uppercase tracking-wide">
+        <button type="button" class="inline-flex items-center gap-1 hover:text-zinc-500 transition" aria-label="Currency">
+          USD
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <a href="#objects" class="hover:text-zinc-500 transition" aria-label="Search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </a>
+        <a href="#" class="hover:text-zinc-500 transition" aria-label="Account">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </a>
+        <a href="#" class="hover:text-zinc-500 transition" aria-label="Wishlist">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </a>
+        <a href="#objects" class="relative hover:text-zinc-500 transition" aria-label="Cart">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<div>
+  <div class="flex min-h-[calc(100vh-5rem)] flex-col justify-between bg-[#ffe481] sm:flex-row">
+    <div class="flex-[3] self-end py-16 pr-6 pl-6 sm:pl-10 xl:pl-[calc((100vw-1360px)/2)] xl:pb-20">
+      <div class="max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.2em] text-zinc-700" data-hero="1">Bombay 19.0760° N &nbsp;·&nbsp; Brooklyn 40.6782° N</p>
+        <h2 class="mt-8 text-5xl/none md:text-6xl/none lg:text-7xl/none font-semibold" data-hero="2">
+          Never Not New York. <span class="font-serif-italic">Made for Life Between Two Worlds.</span>
+        </h2>
+        <p class="mt-8 max-w-md text-sm/6 uppercase text-zinc-700" data-hero="3">Handcrafted in India. Designed in New York. Everyday pieces for people who carry home wherever they go.</p>
+        <a href="#objects" data-hero="4" class="group/btn relative isolate mt-16 inline-flex w-full max-w-lg cursor-pointer items-center justify-between rounded-full border border-white bg-white py-2 pr-2 pl-6 font-medium tracking-wide uppercase underline decoration-1 underline-offset-4 text-sm transition-colors hover:bg-zinc-50">
+          Explore the collection
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white sm:h-12 sm:w-12 transition-transform duration-300 group-hover/btn:translate-x-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+    <div class="relative flex-[2]">
+      <img alt="Never Not New York — hand embroidered tote" src="https://nevernotnewyork.com/cdn/shop/files/DSC08573-min.jpg?v=1749659374&width=1200" class="hero-img object-cover object-center h-72 w-full sm:absolute sm:h-full sm:w-full">
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECONDARY BAND ===================== -->
+<div class="container mt-20 sm:mt-28">
+  <div data-reveal class="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-12">
+    <!-- Left: headline + distance line -->
+    <div class="lg:flex-[2] lg:max-w-md shrink-0">
+      <h2 class="text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium">
+        Mumbai <span class="font-serif-italic">→ Manhattan,</span> made by hands <br class="hidden sm:block"> in India.
+      </h2>
+      <p class="mt-8 text-sm/6 uppercase text-zinc-700">12,542 km between two homes · small runs, no reprints</p>
+      <div class="mt-10 hidden lg:flex gap-2">
+        <button data-carousel="reels" data-dir="-1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+        </button>
+        <button data-carousel="reels" data-dir="1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: reels carousel (~3.5 visible) -->
+    <div class="lg:flex-[3] w-full min-w-0">
+      <div id="track-reels" class="track no-scrollbar flex gap-4 overflow-x-auto snap-x pb-2">
+        <!-- video reel -->
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <video class="h-full w-full object-cover" autoplay muted loop playsinline preload="auto" aria-label="Never Not New York reel">
+              <source src="amc.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <!-- image reels -->
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=900" alt="Bombay Brooklyn tote" loading="lazy" class="h-full w-full object-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=900" alt="Mumbai Manhattan tote" loading="lazy" class="h-full w-full object-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" alt="Vada Pav tote" loading="lazy" class="h-full w-full object-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/F0FE7DA1-9D29-46AA-8588-7A1C902AC9EE.jpg?v=1768765205&width=900" alt="Hoodie Street" loading="lazy" class="h-full w-full object-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01470.jpg?v=1765205370&width=900" alt="Christmas in New York tote" loading="lazy" class="h-full w-full object-cover">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="mt-16 sm:mt-24 py-4 overflow-hidden bg-[#ECFF9F] border border-[#d5f35b]">
+  <div class="marquee text-sm uppercase tracking-[0.2em] text-[#313d00]">
+    <span class="whitespace-nowrap">Mumbai → Manhattan · Made by hands in India · Small runs · Never Not New York · Designed in New York · Embroidered · Painted · Stitched ·&nbsp;</span>
+    <span class="whitespace-nowrap">Mumbai → Manhattan · Made by hands in India · Small runs · Never Not New York · Designed in New York · Embroidered · Painted · Stitched ·&nbsp;</span>
+  </div>
+</div>
+
+<!-- ===================== STATION 01 · CRAFTS ===================== -->
+<section id="crafts" class="container mt-20 sm:mt-32">
+  <div data-reveal class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Station 01 · By Hand</p>
+      <h2 class="mt-3 text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium max-w-2xl">
+        Nothing here comes off a <span class="font-serif-italic">machine line.</span>
+      </h2>
+    </div>
+    <p class="max-w-sm text-sm/6 uppercase text-zinc-500">Four crafts, four ways home travels. Every piece passes through hands before it reaches yours.</p>
+  </div>
+
+  <div data-reveal-stagger class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+    <!-- card -->
+    <a href="#objects" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="Wall hand paints" src="https://nevernotnewyork.com/cdn/shop/files/DSC01470.jpg?v=1765205370&width=900" class="h-full w-full object-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 01</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">Wall Hand Paints</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Painted, not printed — the small unevenness is the signature.</p>
+      </div>
+    </a>
+    <a href="#objects" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="Block print bags" src="https://nevernotnewyork.com/cdn/shop/files/8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" class="h-full w-full object-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 02</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">Block Print Bags</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Hand-carved wooden blocks, pressed one repeat at a time.</p>
+      </div>
+    </a>
+    <a href="#objects" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="Handmade bags" src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=900" class="h-full w-full object-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 03</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">Handmade Bags</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Cut, stitched, and embroidered by hand by artisans in India.</p>
+      </div>
+    </a>
+    <a href="#objects" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="T-shirts and hoodies" src="https://nevernotnewyork.com/cdn/shop/files/F0FE7DA1-9D29-46AA-8588-7A1C902AC9EE.jpg?v=1768765205&width=900" class="h-full w-full object-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 04</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">T-Shirts &amp; Hoodies</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Hand-drawn art on everyday wear.</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ===================== FEATURE SPLIT ===================== -->
+<section class="mt-24 sm:mt-36">
+  <div class="bg-[#ECFF9F]">
+    <div data-reveal-stagger class="container grid grid-cols-1 items-center gap-10 py-16 lg:grid-cols-2 lg:py-24">
+      <div class="relative aspect-[4/5] overflow-hidden rounded-lg">
+        <img alt="Made by hands in India" src="https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=1200" class="h-full w-full object-cover">
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-zinc-700">Station 03 · The Making</p>
+        <h2 class="mt-4 text-4xl leading-none sm:text-5xl xl:text-6xl/none font-medium">
+          Made by hands.<br><span class="font-serif-italic">In India.</span>
+        </h2>
+        <p class="mt-6 max-w-md text-sm/6 uppercase text-zinc-700">Nothing here comes off a machine line. The brush, the block, the needle — every piece carries the mark of the hands that made it.</p>
+        <a href="#objects" class="mt-10 relative isolate inline-flex items-center justify-center gap-x-2 rounded-full border border-zinc-950 uppercase px-6 py-4 text-sm/none font-medium hover:bg-zinc-950 hover:text-white transition">
+          Explore products
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MAKING · THREE COLUMNS ===================== -->
+<section id="making" class="container mt-24 sm:mt-32" data-reveal>
+  <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Radical honesty about how it's made</p>
+  <h2 class="mt-3 text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium max-w-2xl">
+    Real hands. <span class="font-serif-italic">Real results.</span>
+  </h2>
+  <div data-reveal-stagger class="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3">
+    <div>
+      <p class="text-sm uppercase font-medium">The Brush</p>
+      <p class="mt-3 text-sm/6 uppercase text-zinc-500">The wall pieces are painted by hand, one wall at a time. No two are identical — that isn’t a flaw in the process, it is the process.</p>
+    </div>
+    <div>
+      <p class="text-sm uppercase font-medium">The Block</p>
+      <p class="mt-3 text-sm/6 uppercase text-zinc-500">Block prints begin as hand-carved wooden blocks, inked and pressed one repeat at a time — a craft generations older than either skyline.</p>
+    </div>
+    <div>
+      <p class="text-sm uppercase font-medium">The Needle</p>
+      <p class="mt-3 text-sm/6 uppercase text-zinc-500">The bags are made and embroidered by artisans in India, then finished for the everyday — seams doubled, zippers secured.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATION 02 · THE OBJECTS (product carousel) ===================== -->
+<section id="objects" class="container mt-24 sm:mt-36">
+  <div data-reveal class="flex flex-wrap items-center justify-between gap-x-6 gap-y-8">
+    <a href="#objects" class="relative isolate inline-flex shrink-0 items-center justify-center gap-x-2 rounded-full border border-zinc-950 uppercase px-6 py-4 text-sm/none font-medium transition hover:bg-zinc-950 hover:text-white">
+      Explore collection
+    </a>
+    <div class="relative">
+      <h2 class="text-[2rem] sm:text-4xl xl:text-[2.5rem] leading-none font-medium">
+        <span class="text-zinc-300">Explore</span><br>
+        <span class="font-serif-italic">The Most Popular</span>
+      </h2>
+      <div class="pointer-events-none absolute top-[32%] left-[78%] hidden text-zinc-950 lg:block">
+        <svg width="150" height="94" viewBox="0 0 168 105" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.573459 16.1978C118.603 -46.1586 165.27 103.98 165.27 103.98M165.27 103.98L162.007 102.496M165.27 103.98L167.015 101.004" stroke="currentColor"></path>
+        </svg>
+      </div>
+    </div>
+    <p class="max-w-xs lg:max-w-sm text-sm/6 uppercase text-zinc-500">Drawn in New York, made by hands in India. Each one carries a part of home.</p>
+    <div class="flex gap-2 ms-auto xl:ms-0">
+      <button data-carousel="objects" data-dir="-1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+      </button>
+      <button data-carousel="objects" data-dir="1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="track-objects" data-reveal class="track no-scrollbar mt-10 flex gap-5 overflow-x-auto snap-x">
+    <!-- Product cards injected below -->
+  </div>
+</section>
+
+<!-- ===================== STATION 04 · THE DISTANCE (stats) ===================== -->
+<section class="mt-24 sm:mt-36">
+  <div class="relative overflow-hidden bg-zinc-950 text-white">
+    <!-- background image, cropped from the top so the street-level scene shows -->
+    <div class="absolute inset-0 bg-cover" style="background-image:url('the-distance-bg.jpeg'); background-position:center 70%;"></div>
+    <!-- overlays for text legibility (kept light so the image shows through) -->
+    <div class="absolute inset-0 bg-gradient-to-r from-zinc-950/80 via-zinc-950/45 to-zinc-950/10"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/75 via-transparent to-transparent"></div>
+    <div data-reveal class="relative container py-20 lg:py-32">
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-300">Station 04 · The Distance</p>
+      <h2 class="mt-4 max-w-3xl text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium">
+        You memorized a new subway map. But your hands still remember <span class="font-serif-italic">the old one.</span>
+      </h2>
+      <p class="mt-6 max-w-xl text-sm/6 uppercase text-zinc-400">You built something here. You belong there. Most days, both are true at once.</p>
+      <div class="mt-14 grid grid-cols-1 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 border-t border-white/15">
+        <div class="pt-8 pr-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Distance</p>
+          <p class="mt-2 text-3xl font-medium">12,542 km</p>
+        </div>
+        <div class="pt-8 pr-6 lg:border-l lg:border-white/15 lg:pl-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Time ahead</p>
+          <p class="mt-2 text-3xl font-medium">9h 30m</p>
+        </div>
+        <div class="pt-8 pr-6 lg:border-l lg:border-white/15 lg:pl-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Feels like</p>
+          <p class="mt-2 text-3xl font-medium">zero, some days</p>
+        </div>
+        <div class="pt-8 pr-6 lg:border-l lg:border-white/15 lg:pl-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Return ticket</p>
+          <p class="mt-2 text-3xl font-medium">never fully used</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATION 05 · THE PASSENGERS (testimonials) ===================== -->
+<section id="passengers" class="container mt-24 sm:mt-36">
+  <div data-reveal class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Station 05 · The Passengers</p>
+      <h2 class="mt-3 text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium max-w-2xl">
+        Same line, <span class="font-serif-italic">different stops.</span>
+      </h2>
+    </div>
+    <p class="max-w-sm text-sm/6 uppercase text-zinc-500">Not testimonials. Just people who ride the longest local, telling you where they got on.</p>
+  </div>
+
+  <div data-reveal-stagger class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <figure class="border border-zinc-100 bg-white p-8">
+      <blockquote class="text-lg/relaxed">“I hung the subway print next to my H‑1B approval. Both are maps of my life.”</blockquote>
+      <figcaption class="mt-6 text-xs uppercase tracking-wide text-zinc-500">Priya · Jersey City, formerly Andheri East</figcaption>
+    </figure>
+    <figure class="border border-zinc-100 bg-white p-8">
+      <blockquote class="text-lg/relaxed">“The J train sounds nothing like the Harbour Line. Some mornings I hear it anyway.”</blockquote>
+      <figcaption class="mt-6 text-xs uppercase tracking-wide text-zinc-500">Arjun · Bushwick, formerly Matunga</figcaption>
+    </figure>
+    <figure class="border border-zinc-100 bg-white p-8">
+      <blockquote class="text-lg/relaxed">“Diwali here fits on one shelf of one store. So my apartment became the store.”</blockquote>
+      <figcaption class="mt-6 text-xs uppercase tracking-wide text-zinc-500">Sana · Astoria, formerly Bandra West</figcaption>
+    </figure>
+    <figure class="border border-zinc-100 bg-white p-8">
+      <blockquote class="text-lg/relaxed">“I gifted the Nari tote to my sister after three years apart. She held it like a letter.”</blockquote>
+      <figcaption class="mt-6 text-xs uppercase tracking-wide text-zinc-500">Meera · London, formerly Delhi</figcaption>
+    </figure>
+    <figure class="border border-zinc-100 bg-white p-8">
+      <blockquote class="text-lg/relaxed">“I came for two years. That was nine years ago. Both things are still true.”</blockquote>
+      <figcaption class="mt-6 text-xs uppercase tracking-wide text-zinc-500">Rohan · Crown Heights, formerly Pune</figcaption>
+    </figure>
+    <figure class="border border-zinc-100 bg-[#ECFF9F] p-8 flex flex-col justify-between">
+      <blockquote class="text-lg/relaxed font-serif-italic">More passengers, more stops — every day on the longest local.</blockquote>
+      <figcaption class="mt-6 text-xs uppercase tracking-wide text-zinc-700">@nevernotnewyork_</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== NEWSLETTER ===================== -->
+<section class="container mt-24 sm:mt-32 border-t border-zinc-950/10 pt-16 sm:pt-20">
+  <div data-reveal class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
+    <div class="max-w-xl lg:col-span-7">
+      <h2 class="text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium">
+        Postcards, <span class="font-serif-italic">occasionally.</span> New pieces, new stories, no noise.
+      </h2>
+    </div>
+    <form class="w-full max-w-md lg:col-span-5 lg:pt-2" onsubmit="return false;">
+      <div class="flex gap-x-1">
+        <label for="email-address" class="sr-only">Email address</label>
+        <input id="email-address" type="email" required placeholder="Enter your email" class="min-w-0 flex-auto rounded-full border border-zinc-950/15 px-5 py-3.5 text-sm uppercase outline-none focus:border-zinc-950">
+        <button class="relative inline-flex shrink-0 items-center justify-center rounded-full bg-zinc-950 text-white p-3.5" aria-label="Subscribe">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="mt-4 pl-1.5">
+        <p class="text-xs uppercase text-zinc-500">We care about your data. Read our <a class="font-medium text-zinc-950 underline" href="#">privacy&nbsp;policy</a>.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="mt-24 sm:mt-32 bg-zinc-950 text-white">
+  <div class="container py-16">
+    <div data-reveal-stagger class="grid grid-cols-2 gap-8 lg:grid-cols-6">
+      <div class="col-span-2">
+        <span class="text-xl font-semibold tracking-[0.25em]">N N N Y</span>
+        <p class="mt-4 max-w-xs text-sm/6 uppercase text-zinc-400">Never not home. Made by hands in India, designed in New York.</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-zinc-400">Shop</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#objects" class="text-zinc-200 hover:text-white transition">Totes</a></li>
+          <li><a href="#objects" class="text-zinc-200 hover:text-white transition">Hoodies</a></li>
+          <li><a href="#crafts" class="text-zinc-200 hover:text-white transition">Wall paints</a></li>
+          <li><a href="#crafts" class="text-zinc-200 hover:text-white transition">Block prints</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-zinc-400">Stories</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#making" class="text-zinc-200 hover:text-white transition">Our story</a></li>
+          <li><a href="#making" class="text-zinc-200 hover:text-white transition">Why hands, not machines</a></li>
+          <li><a href="#passengers" class="text-zinc-200 hover:text-white transition">The community</a></li>
+          <li><a href="#objects" class="text-zinc-200 hover:text-white transition">Best sellers</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-zinc-400">About</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Gifts from home</a></li>
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Shipping</a></li>
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-zinc-400">Legal</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Terms of service</a></li>
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Privacy policy</a></li>
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Returns</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-14 flex flex-col gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-xs uppercase text-zinc-400">© 2025 Never Not New York. Never not home.</p>
+      <div class="flex gap-5 text-xs uppercase text-zinc-400">
+        <a href="#" class="hover:text-white transition">Instagram</a>
+        <a href="#" class="hover:text-white transition">Facebook</a>
+        <a href="#" class="hover:text-white transition">@nevernotnewyork_</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ---- Products data (content + images from nnny-complete_23.html) ----
+const products = [
+  { name:"Bombay Brooklyn Subway Local", price:"38.00", sub:"Embroidered Tote · the commute you miss", img:"https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=900" },
+  { name:"Mumbai Manhattan Subway Local", price:"38.00", sub:"Embroidered Tote · two islands, one heartbeat", img:"https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=900" },
+  { name:"Vada Pav — Mumbai to Manhattan", price:"38.00", sub:"Embroidered Tote · if you know, you know", img:"https://nevernotnewyork.com/cdn/shop/files/8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" },
+  { name:"Hoodie Street", price:"118.00", sub:"Heavyweight Hoodie · for first winters", img:"https://nevernotnewyork.com/cdn/shop/files/F0FE7DA1-9D29-46AA-8588-7A1C902AC9EE.jpg?v=1768765205&width=900" },
+  { name:"Bombay Brooklyn Tote", price:"38.00", sub:"Embroidered Tote · the everyday between two cities", img:"https://nevernotnewyork.com/cdn/shop/files/DSC08573-min.jpg?v=1749659374&width=900" },
+  { name:"Newyork Cat", price:"38.00", sub:"Embroidered Tote · a small companion", img:"https://nevernotnewyork.com/cdn/shop/files/DSC01420.jpg?v=1765204895&width=900" },
+  { name:"Nari Newyork", price:"38.00", sub:"Embroidered Tote · carried like a letter", img:"https://nevernotnewyork.com/cdn/shop/files/FullSizeRender_7e37b352-807e-452c-bfc3-9dbd91b1b797.jpg?v=1780760165&width=900" },
+  { name:"Prioritize Yourself", price:"38.00", sub:"Embroidered Tote · a note to self", img:"https://nevernotnewyork.com/cdn/shop/files/WhatsApp_Image_2025-10-02_at_3.49.17_PM_1.jpg?v=1759434740&width=900" },
+  { name:"Hoodie Newyork", price:"118.00", sub:"Heavyweight Hoodie · the layer between you and the city", img:"https://nevernotnewyork.com/cdn/shop/files/5F0604DA-8628-4E67-AE2C-C545FDDDD052.jpg?v=1768765207&width=900" },
+  { name:"Christmas in Newyork", price:"38.00", sub:"Embroidered Tote · the season, stitched", img:"https://nevernotnewyork.com/cdn/shop/files/DSC01470.jpg?v=1765205370&width=900" },
+];
+
+const track = document.getElementById('track-objects');
+track.innerHTML = products.map(p => `
+  <div class="snap-start shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+    <div class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100">
+        <img alt="${p.name}" src="${p.img}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase text-zinc-900">NNNY</div>
+        <div class="absolute top-3 right-3 rounded-full bg-white p-2 text-zinc-500">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+        </div>
+      </div>
+      <div class="pt-3">
+        <div class="flex justify-between gap-3">
+          <a href="#" class="text-sm/6 uppercase">${p.name}</a>
+          <p class="text-sm/6 uppercase whitespace-nowrap">$${p.price}</p>
+        </div>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">${p.sub}</p>
+      </div>
+    </div>
+  </div>
+`).join('');
+
+// ---- Carousel arrows ----
+document.querySelectorAll('[data-carousel]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = document.getElementById('track-' + btn.dataset.carousel);
+    const dir = parseInt(btn.dataset.dir, 10);
+    t.scrollBy({ left: dir * Math.round(t.clientWidth * 0.8), behavior: 'smooth' });
+  });
+});
+
+// ---- Scroll-reveal (fade + rise, staggered) ----
+const revealEls = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  revealEls.forEach(el => io.observe(el));
+} else {
+  revealEls.forEach(el => el.classList.add('is-visible'));
+}
+
+// ---- Header state on scroll ----
+const header = document.querySelector('header');
+const onScroll = () => {
+  header.classList.toggle('scrolled', window.scrollY > 20);
+  // subtle hero image parallax (only after user scrolls, so the load animation isn't clobbered)
+  const hero = document.querySelector('.hero-img');
+  if (hero && window.scrollY > 0) {
+    const y = Math.min(window.scrollY, 700);
+    hero.style.transform = 'scale(1.02) translateY(' + (y * 0.06) + 'px)';
+  }
+};
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+// ---- Smooth in-page anchor scrolling ----
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', ev => {
+    const id = a.getAttribute('href');
+    if (id.length > 1) {
+      const target = document.querySelector(id);
+      if (target) { ev.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+  });
+});
+</script>
+</body>
+</html>
