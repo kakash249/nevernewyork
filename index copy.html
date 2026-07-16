@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en" class="text-zinc-950 antialiased">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Never Not New York — Never not home.</title>
+<meta name="description" content="Handcrafted in India, designed in New York. Everyday products for people who live between two worlds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { container: { center:true, padding:'1.5rem', screens:{'2xl':'1400px'} }, extend: { fontFamily: { sans:['"DM Sans"','ui-sans-serif','system-ui','sans-serif'], serif:['"Playfair Display"','ui-serif','Georgia','serif'] } } } };
+</script>
+<style>
+/* =====================================================================
+   Never Not New York — shared design system
+   Preserves the existing homepage DNA and adds page-specific components.
+   ===================================================================== */
+
+html { font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif; }
+body { background:#fff; }
+.font-serif-italic { font-family:"Playfair Display", serif; font-style:italic; }
+.font-sans-upright { font-family:"DM Sans", ui-sans-serif, system-ui, sans-serif; font-style:normal; }
+
+/* ---------- lime accent band (mid-page, secondary to the yellow heros) ---------- */
+.band-lime { background:#ECFF9F; color:#313d00; }
+.band-lime .text-zinc-400 { color:rgba(49,61,0,.42); }
+.band-lime .text-zinc-500,
+.band-lime .text-zinc-600,
+.band-lime .text-zinc-700 { color:rgba(49,61,0,.72); }
+.band-lime .hover\:text-zinc-950:hover { color:#313d00; }
+.band-lime .border-zinc-950\/10,
+.band-lime .border-zinc-950\/12 { border-color:rgba(49,61,0,.18); }
+
+/* ---------- product images fill their frame without stretching ---------- */
+.product-cover { object-fit:cover; }
+.product-center { object-position:center; }
+
+/* buttons don't inherit text-transform (Tailwind base resets them) — force uppercase on tab/filter buttons */
+#faq-tabs button, #filter button { text-transform:uppercase; }
+
+/* ---------- hero auto-carousel (crossfade) ---------- */
+.hc-slide { position:absolute; inset:0; height:100%; width:100%; opacity:0; transition:opacity 1.1s ease; }
+.hc-slide.is-active { opacity:1; }
+#hero-dots button { width:8px; height:8px; border-radius:9999px; background:rgba(255,255,255,.55);
+  box-shadow:0 0 0 1px rgba(9,9,11,.15); transition:background .3s ease, width .3s ease; cursor:pointer; }
+#hero-dots button:hover { background:rgba(255,255,255,.85); }
+#hero-dots button.is-active { background:#fff; width:22px; }
+@media (prefers-reduced-motion:reduce){ .hc-slide { transition:none; } }
+
+/* ---------- scrollbars hidden on carousels ---------- */
+.no-scrollbar::-webkit-scrollbar { display:none; }
+.no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+.track { scroll-behavior:smooth; }
+
+/* ---------- marquee ---------- */
+@keyframes marquee { from { transform:translateX(0);} to { transform:translateX(-50%);} }
+.marquee { display:flex; width:max-content; animation:marquee 32s linear infinite; }
+.marquee:hover { animation-play-state:paused; }
+.marquee-slow { animation-duration:60s; }
+
+/* ---------- scroll-reveal ---------- */
+[data-reveal]{
+  opacity:0; transform:translateY(34px);
+  transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
+  will-change:opacity, transform;
+}
+[data-reveal].is-visible{ opacity:1; transform:none; }
+[data-reveal-stagger] > *{
+  opacity:0; transform:translateY(30px);
+  transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
+}
+[data-reveal-stagger].is-visible > *{ opacity:1; transform:none; }
+[data-reveal-stagger].is-visible > *:nth-child(1){ transition-delay:.00s }
+[data-reveal-stagger].is-visible > *:nth-child(2){ transition-delay:.08s }
+[data-reveal-stagger].is-visible > *:nth-child(3){ transition-delay:.16s }
+[data-reveal-stagger].is-visible > *:nth-child(4){ transition-delay:.24s }
+[data-reveal-stagger].is-visible > *:nth-child(5){ transition-delay:.32s }
+[data-reveal-stagger].is-visible > *:nth-child(6){ transition-delay:.40s }
+[data-reveal-stagger].is-visible > *:nth-child(7){ transition-delay:.48s }
+[data-reveal-stagger].is-visible > *:nth-child(8){ transition-delay:.56s }
+
+/* ---------- hero intro (on load) ---------- */
+@keyframes heroIn { from { opacity:0; transform:translateY(40px);} to { opacity:1; transform:none; } }
+@keyframes heroImg { from { opacity:0; transform:scale(1.08);} to { opacity:1; transform:scale(1);} }
+[data-hero]{ opacity:0; animation:heroIn .95s cubic-bezier(.22,1,.36,1) forwards; }
+[data-hero="1"]{ animation-delay:.15s } [data-hero="2"]{ animation-delay:.30s }
+[data-hero="3"]{ animation-delay:.48s } [data-hero="4"]{ animation-delay:.62s }
+[data-hero="5"]{ animation-delay:.76s }
+.hero-img{ animation:heroImg 1.4s cubic-bezier(.22,1,.36,1) forwards; }
+
+/* ---------- header on scroll ---------- */
+header{ transition:box-shadow .35s ease, padding .35s ease, background-color .35s ease; }
+header.scrolled{ box-shadow:0 1px 24px rgba(0,0,0,.06); }
+header.scrolled nav{ padding-top:.5rem; padding-bottom:.5rem; }
+
+/* active nav marker */
+.nav-link{ position:relative; }
+.nav-link[aria-current="page"]::after{
+  content:""; position:absolute; left:0; right:0; bottom:-6px; height:1px; background:currentColor;
+}
+
+/* ---------- card & image hover polish ---------- */
+.track img, .group\/prd img { transition:transform .6s cubic-bezier(.22,1,.36,1); }
+
+/* ---------- underline link sweep ---------- */
+.link-sweep{
+  background-image:linear-gradient(currentColor,currentColor);
+  background-size:0% 1px; background-position:0 100%; background-repeat:no-repeat;
+  transition:background-size .4s cubic-bezier(.22,1,.36,1);
+}
+.link-sweep:hover, .link-sweep[aria-current="true"]{ background-size:100% 1px; }
+
+/* =====================================================================
+   Carousel engine — drag to scroll (desktop), native snap for touch
+   ===================================================================== */
+.drag-scroll{ cursor:grab; }
+.drag-scroll.is-dragging{ cursor:grabbing; }
+.drag-scroll.is-dragging a,
+.drag-scroll.is-dragging img{ pointer-events:none; }
+.drag-scroll.is-dragging *{ user-select:none; }
+
+/* product info reveal on hover (shop carousel) */
+.prd-reveal .prd-sub{
+  max-height:0; opacity:0; overflow:hidden;
+  transition:max-height .5s cubic-bezier(.22,1,.36,1), opacity .4s ease, margin-top .5s ease;
+}
+.prd-reveal:hover .prd-sub{ max-height:3rem; opacity:1; margin-top:.35rem; }
+
+/* ---------- Station 05 · passenger review cards ---------- */
+.pass-arrow{
+  color:#09090b; padding:.25rem 0; transition:transform .3s cubic-bezier(.22,1,.36,1), opacity .2s ease;
+}
+.pass-arrow:hover{ opacity:.55; }
+.pass-arrow[data-dir="-1"]:hover{ transform:translateX(-4px); }
+.pass-arrow[data-dir="1"]:hover{ transform:translateX(4px); }
+.pass-arrow:disabled{ opacity:.2; pointer-events:none; transform:none; }
+
+.pass-card{
+  scroll-snap-align:start; flex:0 0 auto;
+  width:min(78vw, 20rem); display:flex; flex-direction:column;
+  background:#F7F7F7; padding:2rem;
+}
+@media (min-width:640px){ .pass-card{ width:22rem; } }
+.pass-head{ font-size:1.0625rem; letter-spacing:.01em; }
+.pass-stars{ letter-spacing:.12em; }
+.pass-title{ margin-top:1.1rem; font-weight:500; font-size:1rem; line-height:1.5; }
+.pass-body{ margin-top:1rem; font-size:.9375rem; line-height:1.7; color:#3f3f46; }
+.pass-more{
+  margin-top:1rem; align-self:flex-start; font-size:.9375rem;
+  text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px;
+}
+.pass-more:hover{ opacity:.6; }
+.pass-meta{
+  margin-top:auto; padding-top:2rem;
+  font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; line-height:1.7; color:#71717a;
+}
+
+/* =====================================================================
+   Stories — story cards + community wall
+   ===================================================================== */
+.story-card:hover .story-arrow{ opacity:1; transform:translateX(0); }
+.story-arrow{ opacity:0; transform:translateX(-6px); transition:opacity .4s ease, transform .4s ease; }
+.story-card:hover .story-city{ transform:translateY(-4px); }
+.story-city{ transition:transform .4s cubic-bezier(.22,1,.36,1); }
+
+.postcard{ transition:transform .5s cubic-bezier(.22,1,.36,1); }
+.postcard:hover{ transform:translateY(-6px) rotate(0deg) !important; }
+.annotate{ font-family:"Playfair Display", serif; font-style:italic; }
+
+/* =====================================================================
+   Our Story — two cities split + origin narrative
+   ===================================================================== */
+.city-fragment{ transition:transform .8s cubic-bezier(.22,1,.36,1), opacity .8s ease; }
+
+/* =====================================================================
+   FAQ — accordion
+   ===================================================================== */
+.faq-row{ border-top:1px solid rgba(9,9,11,.12); }
+.faq-row:last-child{ border-bottom:1px solid rgba(9,9,11,.12); }
+.faq-a{
+  max-height:0; opacity:0; overflow:hidden;
+  transition:max-height .55s cubic-bezier(.22,1,.36,1), opacity .45s ease;
+}
+.faq-row.open .faq-a{ max-height:320px; opacity:1; }
+.faq-sign{ transition:transform .45s cubic-bezier(.22,1,.36,1); }
+.faq-row.open .faq-sign{ transform:rotate(135deg); }   /* + becomes × */
+.faq-panel[hidden]{ display:none; }
+
+/* =====================================================================
+   Reduced motion
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce){
+  [data-reveal],[data-reveal-stagger] > *,[data-hero],.hero-img,
+  .marquee{ opacity:1 !important; transform:none !important; animation:none !important; }
+  .track{ scroll-behavior:auto; }
+}
+
+/* --- single-file route switching --- */
+.route{ display:none; }
+.route.is-active{ display:block; }
+/* story & FAQ pages: footer sits flush under the ending block (no gap) */
+body:has([data-route="/about"].is-active) footer,
+body:has([data-route="/faq"].is-active) footer{ margin-top:0; }
+
+/* Our Story deep-link anchors clear the sticky header */
+.os-anchor{ scroll-margin-top:96px; }
+
+/* ---------- Our Story · animated route thread (Mumbai → New York) ----------
+   Runs through the centre of the page BEHIND all content: text, images and the
+   coloured section fills paint on top, so the thread shows only through the
+   negative space and passes behind everything. ------------------------------ */
+[data-route="/about"]{ position:relative; z-index:0; }           /* own stacking context */
+.os-thread{ position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; overflow:visible; }
+.os-thread path{ fill:none; vector-effect:non-scaling-stroke; }
+.os-thread .thread-track{ stroke:rgba(9,9,11,.10); stroke-width:1.5; }
+.os-thread .thread-draw{ stroke:rgba(9,9,11,.55); stroke-width:1.5; stroke-linecap:round; }
+.os-thread circle{ transition:opacity .55s cubic-bezier(.22,1,.36,1); }
+.os-thread .stn{ fill:#fff; stroke:rgba(9,9,11,.5); stroke-width:1.5; opacity:.18; }
+.os-thread .stn.on{ opacity:.85; }
+@media (prefers-reduced-motion:reduce){ .os-thread circle{ transition:none; } }
+
+/* =====================================================================
+   Global mini cart — editorial travel archive, native to the NNNY system.
+   Motion + tokens mirror the existing site (cubic-bezier(.22,1,.36,1),
+   zinc borders, rounded corners, pill CTA, acid lime #ECFF9F).
+   ===================================================================== */
+
+/* header cart trigger + count */
+.cart-count{
+  position:absolute; top:-7px; right:-9px;
+  min-width:17px; height:17px; padding:0 4px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:9999px; background:#18181b; color:#fff;
+  font-size:10px; line-height:1; font-weight:500; letter-spacing:.02em;
+  transform:scale(0); transition:transform .3s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+.cart-count.is-shown{ transform:scale(1); }
+@keyframes cartPulse{ 0%{transform:scale(1)} 40%{transform:scale(1.16)} 100%{transform:scale(1)} }
+[data-cart-trigger].is-pulsing{ animation:cartPulse .42s cubic-bezier(.22,1,.36,1); }
+
+/* add-to-cart button on product cards (matches the homepage corner icon) */
+.card-add{
+  position:absolute; top:.75rem; right:.75rem; z-index:10;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:9999px; background:#fff; color:#71717a; padding:.5rem;
+  box-shadow:0 1px 6px rgba(9,9,11,.10);
+  transition:background-color .35s cubic-bezier(.22,1,.36,1), color .35s cubic-bezier(.22,1,.36,1), transform .35s cubic-bezier(.22,1,.36,1);
+}
+.card-add:hover{ background:#18181b; color:#fff; }
+.card-add.is-added{ transform:scale(.9); }
+.card-add:focus-visible{ outline:none; box-shadow:0 0 0 2px #fff,0 0 0 4px #18181b; }
+
+/* root + overlay */
+.nnny-cart-root{ position:fixed; inset:0; z-index:60; }
+.nnny-cart-root[hidden]{ display:none; }
+.nnny-cart-overlay{
+  position:absolute; inset:0; background:rgba(9,9,11,.38);
+  opacity:0; transition:opacity .4s cubic-bezier(.22,1,.36,1);
+}
+.nnny-cart-root.is-open .nnny-cart-overlay{ opacity:1; }
+
+/* side drawer — slides in from the right edge, full height */
+.nnny-cart-panel{
+  position:absolute; top:0; right:0; bottom:0;
+  width:min(440px, 100vw); height:100%; max-height:100%;
+  display:flex; flex-direction:column;
+  background:#fff; border-left:1px solid rgba(9,9,11,.10); border-radius:0;
+  box-shadow:-26px 0 60px -22px rgba(9,9,11,.28), -10px 0 26px -14px rgba(9,9,11,.16);
+  overflow:hidden;
+  opacity:1; transform:translateX(100%);
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.nnny-cart-root.is-open .nnny-cart-panel{ transform:translateX(0); }
+
+/* head / scroll / foot regions */
+.nnny-cart-head{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
+  gap:.75rem; padding:1.15rem 1.25rem; border-bottom:1px solid rgba(9,9,11,.10);
+}
+.nnny-cart-scroll{ flex:1 1 auto; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+.nnny-cart-foot{ flex:0 0 auto; border-top:1px solid rgba(9,9,11,.10); padding:1.15rem 1.25rem 1.25rem; background:#fff; }
+.nnny-cart-foot[hidden]{ display:none; }
+
+.nnny-cart-eyebrow{ font-size:12px; text-transform:uppercase; letter-spacing:.2em; }
+.nnny-cart-close{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; margin:-11px -11px -11px 0; color:#18181b;
+  border-radius:9999px; transition:color .3s ease, background-color .3s ease;
+}
+.nnny-cart-close:hover{ background:rgba(9,9,11,.05); }
+.nnny-cart-close:focus-visible{ outline:none; box-shadow:0 0 0 2px #18181b inset; }
+
+/* cart line item */
+.nnny-cart-item{
+  display:flex; gap:1rem; padding:1.15rem 1.25rem;
+  border-bottom:1px solid rgba(9,9,11,.08); overflow:hidden;
+  transition:max-height .4s cubic-bezier(.22,1,.36,1), opacity .3s ease,
+             transform .4s cubic-bezier(.22,1,.36,1), padding .4s ease, margin .4s ease;
+}
+.nnny-cart-item.is-removing{ opacity:0; transform:translateX(18px); padding-top:0; padding-bottom:0; margin-top:0; margin-bottom:0; }
+.nnny-ci-img{ flex:0 0 auto; width:100px; aspect-ratio:3/4; overflow:hidden; border-radius:.5rem; background:#f4f4f5; }
+.nnny-ci-img img{ width:100%; height:100%; product-fit:cover; transition:transform .5s cubic-bezier(.22,1,.36,1); }
+.nnny-ci-img:hover img{ transform:scale(1.03); }
+.nnny-ci-body{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; }
+.nnny-ci-top{ display:flex; justify-content:space-between; gap:.75rem; }
+.nnny-ci-title{ font-size:13px; line-height:1.35; text-transform:uppercase; letter-spacing:.01em; display:inline; }
+.nnny-ci-sub{ margin-top:.3rem; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#a1a1aa; }
+.nnny-ci-price{ font-size:13px; text-transform:uppercase; white-space:nowrap; }
+.nnny-ci-bottom{ margin-top:auto; padding-top:.9rem; display:flex; align-items:center; justify-content:space-between; gap:.75rem; }
+
+/* quantity controller — thin, no heavy box */
+.nnny-qty{ display:inline-flex; align-items:center; gap:.35rem; }
+.nnny-qty button{
+  width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid rgba(9,9,11,.18); border-radius:9999px; color:#18181b;
+  transition:background-color .3s ease, border-color .3s ease, color .3s ease;
+}
+.nnny-qty button:hover{ background:rgba(9,9,11,.05); border-color:rgba(9,9,11,.4); }
+.nnny-qty button:focus-visible{ outline:none; box-shadow:0 0 0 2px #18181b; }
+.nnny-qty span{ min-width:1.6rem; text-align:center; font-size:13px; font-variant-numeric:tabular-nums; }
+.nnny-remove{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#a1a1aa; }
+.nnny-remove:hover{ color:#18181b; }
+
+/* shipping progress */
+.nnny-ship{ padding:1.15rem 1.25rem .25rem; }
+.nnny-ship-label{ font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:#52525b; }
+.nnny-ship-label.free{
+  display:inline-block; color:#313d00; background:#ECFF9F;
+  padding:.2rem .5rem; border-radius:.25rem; letter-spacing:.14em;
+}
+.nnny-ship-track{ margin-top:.6rem; height:2px; width:100%; background:rgba(9,9,11,.10); border-radius:2px; overflow:hidden; }
+.nnny-ship-fill{ height:100%; background:#18181b; width:0%; transition:width .5s cubic-bezier(.22,1,.36,1); }
+
+/* subtotal + checkout */
+.nnny-sub-row{ display:flex; align-items:baseline; justify-content:space-between; }
+.nnny-sub-total{ font-size:1.75rem; line-height:1; letter-spacing:-.01em; }
+.nnny-sub-note{ margin-top:.55rem; font-size:13px; color:#71717a; }
+.nnny-checkout{
+  margin-top:1.1rem; width:100%; display:flex; align-items:center; justify-content:space-between;
+  gap:.75rem; padding:.55rem .55rem .55rem 1.5rem; border-radius:9999px;
+  background:#18181b; color:#fff; font-size:13px; text-transform:uppercase; letter-spacing:.02em; font-weight:500;
+  transition:background-color .35s cubic-bezier(.22,1,.36,1);
+}
+.nnny-checkout:hover{ background:#3f3f46; }
+.nnny-checkout:focus-visible{ outline:none; box-shadow:0 0 0 2px #fff,0 0 0 4px #18181b; }
+.nnny-checkout .amt{ display:inline-flex; align-items:center; gap:1rem; }
+.nnny-checkout .arrow{
+  display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px;
+  border-radius:9999px; background:#fff; color:#18181b;
+  transition:transform .3s cubic-bezier(.22,1,.36,1);
+}
+.nnny-checkout:hover .arrow{ transform:translateX(3px); }
+.nnny-continue{
+  display:block; width:100%; margin-top:.9rem; text-align:center;
+  font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#71717a;
+}
+.nnny-continue span{ color:#18181b; }
+
+/* empty state */
+.nnny-empty{ padding:2.5rem 1.5rem 1.75rem; }
+.nnny-empty-msg{ font-size:2rem; line-height:1.05; letter-spacing:-.01em; color:#18181b; }
+.nnny-empty-note{ margin-top:1rem; max-width:22rem; font-size:13px; color:#71717a; }
+.nnny-empty-cta{
+  margin-top:1.6rem; display:inline-flex; align-items:center; gap:.5rem;
+  font-size:13px; text-transform:uppercase; letter-spacing:.04em; font-weight:500; color:#18181b;
+}
+.nnny-suggest{ border-top:1px solid rgba(9,9,11,.10); padding:1.5rem; }
+.nnny-suggest-h{ font-size:11px; text-transform:uppercase; letter-spacing:.2em; color:#a1a1aa; }
+.nnny-suggest-grid{ margin-top:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.nnny-suggest-card{ display:block; }
+.nnny-suggest-card .sc-img{ position:relative; width:100%; aspect-ratio:3/4; overflow:hidden; border-radius:.5rem; background:#f4f4f5; }
+.nnny-suggest-card .sc-img img{ width:100%; height:100%; product-fit:cover; transition:transform .5s cubic-bezier(.22,1,.36,1); }
+.nnny-suggest-card:hover .sc-img img{ transform:scale(1.04); }
+.nnny-suggest-card .sc-name{ margin-top:.5rem; font-size:11px; text-transform:uppercase; letter-spacing:.02em; }
+.nnny-suggest-card .sc-price{ font-size:11px; text-transform:uppercase; color:#71717a; }
+
+/* mobile — full-width right drawer */
+@media (max-width:640px){
+  .nnny-cart-panel{ width:100%; border-left:none; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .nnny-cart-overlay,.nnny-cart-panel,.nnny-cart-item,.nnny-ship-fill,.card-add,.cart-count{ transition:none !important; }
+  .nnny-cart-panel{ transform:none !important; }
+  [data-cart-trigger].is-pulsing{ animation:none !important; }
+}
+
+/* =====================================================================
+   NNNY premium palette — gallery-inspired (SoHo / Tribeca)
+   Off White bg, Charcoal ink, Warm Stone sections, Deep Forest accent,
+   Antique Gold buttons/highlights. Overrides the Tailwind utilities in use.
+   ===================================================================== */
+:root{
+  --nn-off:#F8F7F3; --nn-ink:#1E1E1E; --nn-stone:#E8E3DB; --nn-forest:#2F4F46; --nn-gold:#B08D57;
+}
+html, body{ background:var(--nn-off) !important; color:var(--nn-ink) !important; }
+
+/* --- surfaces --- */
+.bg-white{ background-color:var(--nn-off) !important; }
+.bg-white\/90{ background-color:rgba(248,247,243,.9) !important; }
+.bg-zinc-50, .bg-zinc-100{ background-color:var(--nn-stone) !important; }
+.bg-\[\#ffe481\], .bg-\[\#ECFF9F\], .band-lime{ background-color:var(--nn-stone) !important; }
+.band-lime{ color:var(--nn-ink) !important; }
+
+/* dark surfaces (footer, The Distance) → Deep Forest Green */
+footer.bg-zinc-950, .bg-zinc-950:not(.rounded-full){ background-color:var(--nn-forest) !important; }
+.bg-zinc-900:not(.rounded-full){ background-color:var(--nn-forest) !important; }
+.bg-zinc-950\/12{ background-color:rgba(30,30,30,.12) !important; }
+.bg-zinc-950\/25{ background-color:rgba(30,30,30,.25) !important; }
+
+/* --- text --- */
+.text-zinc-950, .text-zinc-900{ color:var(--nn-ink) !important; }
+.text-white{ color:var(--nn-off) !important; }
+.text-zinc-700, .text-zinc-600{ color:rgba(30,30,30,.72) !important; }
+.text-zinc-500{ color:rgba(30,30,30,.55) !important; }
+.text-zinc-400{ color:rgba(30,30,30,.42) !important; }
+.text-zinc-300{ color:rgba(30,30,30,.30) !important; }
+.text-\[\#313d00\]{ color:var(--nn-forest) !important; }
+/* muted text sitting on the dark forest surfaces stays light */
+.bg-zinc-950 .text-zinc-400, .bg-zinc-950 .text-zinc-300{ color:rgba(248,247,243,.68) !important; }
+.bg-zinc-950 .text-zinc-200{ color:rgba(248,247,243,.86) !important; }
+.band-lime .text-zinc-700, .band-lime .text-zinc-600, .band-lime .text-zinc-500{ color:rgba(30,30,30,.7) !important; }
+.band-lime .text-zinc-400{ color:rgba(30,30,30,.45) !important; }
+
+/* --- borders --- */
+.border-zinc-100, .border-zinc-950\/10, .border-zinc-950\/12, .border-zinc-950\/15{ border-color:rgba(30,30,30,.14) !important; }
+.border-\[\#d5f35b\]{ border-color:rgba(47,79,70,.22) !important; }
+.border-white{ border-color:var(--nn-gold) !important; }
+
+/* --- buttons & highlights → Antique Gold (with charcoal text/icon for contrast) --- */
+.rounded-full.bg-zinc-950, .rounded-full.bg-zinc-900{ background-color:var(--nn-gold) !important; color:var(--nn-ink) !important; }
+.rounded-full.bg-zinc-950.text-white, .rounded-full.bg-zinc-900.text-white{ color:var(--nn-ink) !important; }
+/* outline buttons fill Deep Forest on hover, so the gold arrow badge stays legible */
+.hover\:bg-zinc-950:hover{ background-color:var(--nn-forest) !important; color:var(--nn-off) !important; }
+.hover\:bg-zinc-50:hover{ background-color:var(--nn-stone) !important; }
+.hover\:text-zinc-950:hover{ color:var(--nn-ink) !important; }
+
+/* --- cart drawer --- */
+.nnny-cart-panel, .nnny-cart-foot{ background:var(--nn-off) !important; }
+.nnny-checkout{ background:var(--nn-gold) !important; color:var(--nn-ink) !important; }
+.nnny-checkout:hover{ background:var(--nn-forest) !important; color:var(--nn-off) !important; }
+.nnny-ship-label.free{ background:var(--nn-stone) !important; color:var(--nn-forest) !important; }
+
+/* --- story-hero white fade → off-white so it merges seamlessly --- */
+.from-white{ --tw-gradient-from:#F8F7F3 var(--tw-gradient-from-position) !important;
+  --tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-via, rgba(248,247,243,.6)), var(--tw-gradient-to, rgba(248,247,243,0)) !important; }
+.via-white\/60{ --tw-gradient-via:rgba(248,247,243,.6) !important; }
+</style>
+</head>
+<body class="text-zinc-950">
+
+<header class="group z-30 w-full sticky top-0 bg-white/90 backdrop-blur">
+  <div class="container">
+    <nav class="flex items-center justify-between border-b border-zinc-950/10 py-2">
+      <div class="flex lg:flex-1">
+        <a href="#/" class="-m-1.5 p-1.5 flex items-center">
+          <img src="logo.png" alt="Never Not New York" class="h-14 w-auto">
+        </a>
+      </div>
+      <div class="hidden lg:flex lg:gap-x-8 text-sm uppercase tracking-wide">
+        <a href="#/shop" data-navroute="/shop" class="nav-link hover:text-zinc-500 transition">Shop</a>
+        <a href="#/about" data-navroute="/about" class="nav-link hover:text-zinc-500 transition">Our Story</a>
+        <a href="#/faq" data-navroute="/faq" class="nav-link hover:text-zinc-500 transition">FAQ</a>
+      </div>
+      <div class="flex flex-1 justify-end items-center gap-x-4 sm:gap-x-6 text-sm uppercase tracking-wide">
+        <button type="button" class="hidden sm:inline-flex items-center gap-1 hover:text-zinc-500 transition" aria-label="Currency">USD
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <a href="#/shop" class="hover:text-zinc-500 transition" aria-label="Search"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></a>
+        <a href="#" class="hidden sm:inline-flex hover:text-zinc-500 transition" aria-label="Account"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></a>
+        <a href="#" class="hidden sm:inline-flex hover:text-zinc-500 transition" aria-label="Wishlist"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></a>
+        <button type="button" data-cart-trigger aria-label="Open bag" aria-haspopup="dialog" aria-expanded="false" aria-controls="nnny-cart" class="relative hover:text-zinc-500 transition"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span data-cart-count class="cart-count" aria-hidden="true">0</span></button>
+        <button id="menu-btn" type="button" class="lg:hidden hover:text-zinc-500 transition" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
+    </nav>
+    <div id="mobile-nav" class="lg:hidden hidden border-b border-zinc-950/10">
+      <div class="py-4 flex flex-col gap-1 text-sm uppercase tracking-wide">
+      <a href="#/shop" data-navroute="/shop" class="py-2.5">Shop</a>
+      <a href="#/about" data-navroute="/about" class="py-2.5">Our Story</a>
+      <a href="#/faq" data-navroute="/faq" class="py-2.5">FAQ</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="route is-active" data-route="/">
+<!-- ===================== HERO ===================== -->
+<div>
+  <div class="flex min-h-[calc(100vh-5rem)] flex-col justify-between bg-[#ffe481] sm:flex-row">
+    <div class="flex-[3] self-center py-16 pr-6 pl-6 sm:pl-10 xl:pl-[calc((100vw-1360px)/2)]">
+      <div class="max-w-2xl">
+        <p class="text-xs uppercase tracking-[0.2em] text-zinc-700" data-hero="1">Bombay 19.0760° N &nbsp;·&nbsp; Brooklyn 40.6782° N</p>
+        <h2 class="mt-8 text-4xl/[1.05] md:text-5xl/[1.05] lg:text-[3.25rem]/[1.05] font-semibold" data-hero="2">
+          Never Not New York. <span class="font-serif-italic block">Made for Life<br><span class="font-sans-upright">Between</span><br>Two Worlds.</span>
+        </h2>
+        <p class="mt-8 max-w-md text-sm/6 uppercase text-zinc-700" data-hero="3">Handcrafted in India. Designed in New York. Everyday pieces for people who carry home wherever they go.</p>
+        <a href="#/shop" data-hero="4" class="group/btn relative isolate mt-16 inline-flex w-full max-w-lg cursor-pointer items-center justify-between rounded-full border border-white bg-white py-2 pr-2 pl-6 font-medium tracking-wide uppercase underline decoration-1 underline-offset-4 text-sm transition-colors hover:bg-zinc-50">
+          Explore the collection
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white sm:h-12 sm:w-12 transition-transform duration-300 group-hover/btn:translate-x-1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+    <div class="relative flex-[2]">
+      <div id="hero-carousel" class="hero-img relative h-72 w-full overflow-hidden sm:absolute sm:inset-0 sm:h-full sm:w-full">
+        <img class="hc-slide product-cover product-center is-active" src="https://nevernotnewyork.com/cdn/shop/files/DSC08573-min.jpg?v=1749659374&width=1200" alt="Never Not New York — hand embroidered tote">
+        <img class="hc-slide product-cover product-center" src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=1200" alt="Bombay Brooklyn Subway Local tote" loading="lazy">
+        <img class="hc-slide product-cover product-center" src="https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=1200" alt="Mumbai Manhattan Subway Local tote" loading="lazy">
+        <div id="hero-dots" class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2" role="tablist" aria-label="Hero images"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECONDARY BAND ===================== -->
+<div class="container mt-20 sm:mt-28">
+  <div data-reveal class="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-12">
+    <!-- Left: headline + distance line -->
+    <div class="lg:flex-[2] lg:max-w-md shrink-0">
+      <h2 class="text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium">
+        Mumbai <span class="font-serif-italic">→ Manhattan,</span> made by hands <br class="hidden sm:block"> in India.
+      </h2>
+      <p class="mt-8 text-sm/6 uppercase text-zinc-700">12,542 km between two homes · small runs, no reprints</p>
+      <div class="mt-10 hidden lg:flex gap-2">
+        <button data-carousel="reels" data-dir="-1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+        </button>
+        <button data-carousel="reels" data-dir="1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: reels carousel (~3.5 visible) -->
+    <div class="lg:flex-[3] w-full min-w-0">
+      <div id="track-reels" class="track no-scrollbar flex gap-4 overflow-x-auto snap-x pb-2">
+        <!-- video reel -->
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <video class="h-full w-full product-cover" autoplay muted loop playsinline preload="auto" aria-label="Never Not New York reel">
+              <source src="amc.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <!-- image reels -->
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=900" alt="Bombay Brooklyn tote" loading="lazy" class="h-full w-full product-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=900" alt="Mumbai Manhattan tote" loading="lazy" class="h-full w-full product-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" alt="Vada Pav tote" loading="lazy" class="h-full w-full product-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/F0FE7DA1-9D29-46AA-8588-7A1C902AC9EE.jpg?v=1768765205&width=900" alt="Hoodie Street" loading="lazy" class="h-full w-full product-cover">
+          </div>
+        </div>
+        <div class="snap-start shrink-0 basis-[62%] sm:basis-[40%] lg:basis-[26.5%]">
+          <div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-zinc-100">
+            <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01470.jpg?v=1765205370&width=900" alt="Christmas in New York tote" loading="lazy" class="h-full w-full product-cover">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="mt-16 sm:mt-24 py-4 overflow-hidden bg-[#ECFF9F] border border-[#d5f35b]">
+  <div class="marquee text-sm uppercase tracking-[0.2em] text-[#313d00]">
+    <span class="whitespace-nowrap">Mumbai → Manhattan · Made by hands in India · Small runs · Never Not New York · Designed in New York · Embroidered · Painted · Stitched ·&nbsp;</span>
+    <span class="whitespace-nowrap">Mumbai → Manhattan · Made by hands in India · Small runs · Never Not New York · Designed in New York · Embroidered · Painted · Stitched ·&nbsp;</span>
+  </div>
+</div>
+
+<!-- ===================== STATION 01 · CRAFTS ===================== -->
+<section id="crafts" class="container mt-20 sm:mt-32">
+  <div data-reveal class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Station 01 · By Hand</p>
+      <h2 class="mt-3 text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium max-w-2xl">
+        Nothing here comes off a <span class="font-serif-italic">machine line.</span>
+      </h2>
+    </div>
+    <p class="max-w-sm text-sm/6 uppercase text-zinc-500">Four crafts, four ways home travels. Every piece passes through hands before it reaches yours.</p>
+  </div>
+
+  <div data-reveal-stagger class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+    <!-- card -->
+    <a href="#products" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="Wall hand paints" src="https://nevernotnewyork.com/cdn/shop/files/DSC01470.jpg?v=1765205370&width=900" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 01</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">Wall Hand Paints</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Painted, not printed — the small unevenness is the signature.</p>
+      </div>
+    </a>
+    <a href="#products" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="Block print bags" src="https://nevernotnewyork.com/cdn/shop/files/8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 02</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">Block Print Bags</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Hand-carved wooden blocks, pressed one repeat at a time.</p>
+      </div>
+    </a>
+    <a href="#products" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="Handmade bags" src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=900" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 03</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">Handmade Bags</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Cut, stitched, and embroidered by hand by artisans in India.</p>
+      </div>
+    </a>
+    <a href="#products" class="group/prd relative w-full">
+      <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg">
+        <img alt="T-shirts and hoodies" src="https://nevernotnewyork.com/cdn/shop/files/F0FE7DA1-9D29-46AA-8588-7A1C902AC9EE.jpg?v=1768765205&width=900" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+        <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase">C · 04</div>
+      </div>
+      <div class="pt-3">
+        <p class="text-sm/6 uppercase font-medium">T-Shirts &amp; Hoodies</p>
+        <p class="mt-0.5 text-xs text-zinc-500 uppercase">Hand-drawn art on everyday wear.</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ===================== FEATURE SPLIT ===================== -->
+<section class="mt-24 sm:mt-36">
+  <div class="bg-[#ECFF9F]">
+    <div data-reveal-stagger class="container grid grid-cols-1 items-center gap-10 py-16 lg:grid-cols-2 lg:py-24">
+      <div class="relative aspect-[4/5] overflow-hidden rounded-lg">
+        <img alt="Made by hands in India" src="https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=1200" class="h-full w-full product-cover">
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-zinc-700">Station 03 · The Making</p>
+        <h2 class="mt-4 text-4xl leading-none sm:text-5xl xl:text-6xl/none font-medium">
+          Made by hands.<br><span class="font-serif-italic">In India.</span>
+        </h2>
+        <p class="mt-6 max-w-md text-sm/6 uppercase text-zinc-700">Nothing here comes off a machine line. The brush, the block, the needle — every piece carries the mark of the hands that made it.</p>
+        <a href="#products" class="mt-10 relative isolate inline-flex items-center justify-center gap-x-2 rounded-full border border-zinc-950 uppercase px-6 py-4 text-sm/none font-medium hover:bg-zinc-950 hover:text-white transition">
+          Explore products
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MAKING · THREE COLUMNS ===================== -->
+<section id="making" class="container mt-24 sm:mt-32" data-reveal>
+  <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Radical honesty about how it's made</p>
+  <h2 class="mt-3 text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium max-w-2xl">
+    Real hands. <span class="font-serif-italic">Real results.</span>
+  </h2>
+  <div data-reveal-stagger class="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3">
+    <div>
+      <p class="text-sm uppercase font-medium">The Brush</p>
+      <p class="mt-3 text-sm/6 uppercase text-zinc-500">The wall pieces are painted by hand, one wall at a time. No two are identical — that isn’t a flaw in the process, it is the process.</p>
+    </div>
+    <div>
+      <p class="text-sm uppercase font-medium">The Block</p>
+      <p class="mt-3 text-sm/6 uppercase text-zinc-500">Block prints begin as hand-carved wooden blocks, inked and pressed one repeat at a time — a craft generations older than either skyline.</p>
+    </div>
+    <div>
+      <p class="text-sm uppercase font-medium">The Needle</p>
+      <p class="mt-3 text-sm/6 uppercase text-zinc-500">The bags are made and embroidered by artisans in India, then finished for the everyday — seams doubled, zippers secured.</p>
+    </div>
+  </div>
+  <div class="mt-12"><a href="#/about#hands" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Read our story <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</section>
+
+<!-- ===================== STATION 02 · THE OBJECTS (product carousel) ===================== -->
+<section id="products" class="container mt-24 sm:mt-36">
+  <div data-reveal class="flex flex-wrap items-center justify-between gap-x-6 gap-y-8">
+    <a href="#products" class="relative isolate inline-flex shrink-0 items-center justify-center gap-x-2 rounded-full border border-zinc-950 uppercase px-6 py-4 text-sm/none font-medium transition hover:bg-zinc-950 hover:text-white">
+      Explore collection
+    </a>
+    <div class="relative">
+      <h2 class="text-[2rem] sm:text-4xl xl:text-[2.5rem] leading-none font-medium">
+        <span class="text-zinc-300">Explore</span><br>
+        <span class="font-serif-italic">The Most Popular</span>
+      </h2>
+      <div class="pointer-events-none absolute top-[32%] left-[78%] hidden text-zinc-950 lg:block">
+        <svg width="150" height="94" viewBox="0 0 168 105" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.573459 16.1978C118.603 -46.1586 165.27 103.98 165.27 103.98M165.27 103.98L162.007 102.496M165.27 103.98L167.015 101.004" stroke="currentColor"></path>
+        </svg>
+      </div>
+    </div>
+    <p class="max-w-xs lg:max-w-sm text-sm/6 uppercase text-zinc-500">Drawn in New York, made by hands in India. Each one carries a part of home.</p>
+    <div class="flex gap-2 ms-auto xl:ms-0">
+      <button data-carousel="products" data-dir="-1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+      </button>
+      <button data-carousel="products" data-dir="1" class="relative isolate inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="track-products" data-reveal class="track no-scrollbar mt-10 flex gap-5 overflow-x-auto snap-x">
+    <!-- Product cards injected below -->
+  </div>
+</section>
+
+<!-- ===================== STATION 04 · THE DISTANCE (stats) ===================== -->
+<section class="mt-24 sm:mt-36">
+  <div class="relative overflow-hidden bg-zinc-950 text-white">
+    <!-- background image, cropped from the top so the street-level scene shows -->
+    <div class="absolute inset-0 bg-cover" style="background-image:url('the-distance-bg.jpeg'); background-position:center 70%;"></div>
+    <!-- overlays for text legibility (kept light so the image shows through) -->
+    <div class="absolute inset-0 bg-gradient-to-r from-zinc-950/80 via-zinc-950/45 to-zinc-950/10"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/75 via-transparent to-transparent"></div>
+    <div data-reveal class="relative container py-20 lg:py-32">
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-300">Station 04 · The Distance</p>
+      <h2 class="mt-4 max-w-3xl text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium">
+        You memorized a new subway map. But your hands still remember <span class="font-serif-italic">the old one.</span>
+      </h2>
+      <p class="mt-6 max-w-xl text-sm/6 uppercase text-zinc-400">You built something here. You belong there. Most days, both are true at once.</p>
+      <div class="mt-14 grid grid-cols-1 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 border-t border-white/15">
+        <div class="pt-8 pr-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Distance</p>
+          <p class="mt-2 text-3xl font-medium">12,542 km</p>
+        </div>
+        <div class="pt-8 pr-6 lg:border-l lg:border-white/15 lg:pl-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Time ahead</p>
+          <p class="mt-2 text-3xl font-medium">9h 30m</p>
+        </div>
+        <div class="pt-8 pr-6 lg:border-l lg:border-white/15 lg:pl-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Feels like</p>
+          <p class="mt-2 text-3xl font-medium">zero, some days</p>
+        </div>
+        <div class="pt-8 pr-6 lg:border-l lg:border-white/15 lg:pl-6">
+          <p class="text-xs uppercase tracking-wide text-zinc-400">Return ticket</p>
+          <p class="mt-2 text-3xl font-medium">never fully used</p>
+        </div>
+      </div>
+      <div class="mt-12"><a href="#/about#distance" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-white">Why 12,542 km? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATION 05 · THE PASSENGERS (testimonials) ===================== -->
+<section id="passengers" class="mt-24 sm:mt-36">
+  <div class="container">
+    <div data-reveal class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Station 05 · The Passengers</p>
+        <h2 class="mt-3 text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium max-w-2xl">
+          Same line, <span class="font-serif-italic">different stops.</span>
+        </h2>
+        <p class="mt-4 max-w-md text-sm/6 uppercase text-zinc-500">Not testimonials. Just people who ride the longest local, telling you where they got on.</p>
+      </div>
+      <div class="flex items-center gap-6 lg:pb-2">
+        <a href="#/about#people" class="link-sweep hidden sm:inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Meet the passengers</a>
+        <div class="flex items-center gap-6 ms-auto lg:ms-0">
+          <button data-carousel="passengers" data-dir="-1" class="pass-arrow" aria-label="Previous passenger">
+            <svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-11"><path d="M47 10H2M11 1 2 10l9 9"/></svg>
+          </button>
+          <button data-carousel="passengers" data-dir="1" class="pass-arrow" aria-label="Next passenger">
+            <svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-11"><path d="M1 10h45M37 1l9 9-9 9"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Track bleeds to the right edge so the next card peeks in, like the reference -->
+  <div id="track-passengers" data-reveal tabindex="0" role="region" aria-label="Passenger reviews"
+       class="track no-scrollbar mt-12 flex items-stretch gap-5 overflow-x-auto snap-x scroll-px-6 pb-2 ps-6 pe-6 sm:scroll-px-[max(1.5rem,calc((100vw-1400px)/2+1.5rem))] sm:ps-[max(1.5rem,calc((100vw-1400px)/2+1.5rem))] focus:outline-none">
+
+    <figure class="pass-card">
+      <p class="pass-head"><span class="pass-stars">★★★★★</span> <span class="text-zinc-400">–</span> Priya</p>
+      <p class="pass-title">Both are maps of my life.</p>
+      <blockquote class="pass-body line-clamp-2">I hung the subway print next to my H-1B approval. Both are maps of my life. Twelve years of paperwork on one wall and twelve thousand kilometres on the other, and somehow the map is the one that feels official.</blockquote>
+      <button class="pass-more" type="button">Read More</button>
+      <figcaption class="pass-meta">Jersey City · formerly Andheri East<br><span class="text-zinc-500">Bombay Brooklyn Subway Local</span></figcaption>
+    </figure>
+
+    <figure class="pass-card">
+      <p class="pass-head"><span class="pass-stars">★★★★★</span> <span class="text-zinc-400">–</span> Arjun</p>
+      <p class="pass-title">Some mornings I hear it anyway.</p>
+      <blockquote class="pass-body line-clamp-2">The J train sounds nothing like the Harbour Line. Some mornings I hear it anyway — the same lurch out of the station, the same people half-asleep against the glass. I bought the print so the sound would have somewhere to live.</blockquote>
+      <button class="pass-more" type="button">Read More</button>
+      <figcaption class="pass-meta">Bushwick · formerly Matunga<br><span class="text-zinc-500">Mumbai Manhattan Subway Local</span></figcaption>
+    </figure>
+
+    <figure class="pass-card">
+      <p class="pass-head"><span class="pass-stars">★★★★★</span> <span class="text-zinc-400">–</span> Sana</p>
+      <p class="pass-title">So my apartment became the store.</p>
+      <blockquote class="pass-body line-clamp-2">Diwali here fits on one shelf of one store. So my apartment became the store. Everything arrived wrapped like it had been packed by someone who knew what it was for.</blockquote>
+      <button class="pass-more" type="button">Read More</button>
+      <figcaption class="pass-meta">Astoria · formerly Bandra West<br><span class="text-zinc-500">Christmas in New York</span></figcaption>
+    </figure>
+
+    <figure class="pass-card">
+      <p class="pass-head"><span class="pass-stars">★★★★★</span> <span class="text-zinc-400">–</span> Meera</p>
+      <p class="pass-title">She held it like a letter.</p>
+      <blockquote class="pass-body line-clamp-2">I gifted the Nari tote to my sister after three years apart. She held it like a letter. Three years is a long time to explain a city over the phone; the embroidery did it in about four seconds.</blockquote>
+      <button class="pass-more" type="button">Read More</button>
+      <figcaption class="pass-meta">London · formerly Delhi<br><span class="text-zinc-500">Nari Tote</span></figcaption>
+    </figure>
+
+    <a href="#/about#people" class="pass-card group/pass !bg-[#ECFF9F] border border-zinc-950 justify-between transition hover:bg-zinc-950 hover:!bg-zinc-950 hover:text-white">
+      <blockquote class="text-lg/relaxed font-serif-italic">Same line. Different stops. Read where the rest of the passengers got on.</blockquote>
+      <span class="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-wide font-medium">Meet the passengers <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300 group-hover/pass:translate-x-1"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+</section>
+
+<!-- ===================== NEWSLETTER ===================== -->
+<section class="container mt-24 sm:mt-32 border-t border-zinc-950/10 pt-16 sm:pt-20">
+  <div data-reveal class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
+    <div class="max-w-xl lg:col-span-7">
+      <h2 class="text-3xl leading-none sm:text-4xl xl:text-5xl/none font-medium">
+        Postcards, <span class="font-serif-italic">occasionally.</span> New pieces, new stories, no noise.
+      </h2>
+    </div>
+    <form class="w-full max-w-md lg:col-span-5 lg:pt-2" onsubmit="return false;">
+      <div class="flex gap-x-1">
+        <label for="email-address" class="sr-only">Email address</label>
+        <input id="email-address" type="email" required placeholder="Enter your email" class="min-w-0 flex-auto rounded-full border border-zinc-950/15 px-5 py-3.5 text-sm uppercase outline-none focus:border-zinc-950">
+        <button class="relative inline-flex shrink-0 items-center justify-center rounded-full bg-zinc-950 text-white p-3.5" aria-label="Subscribe">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="mt-4 pl-1.5">
+        <p class="text-xs uppercase text-zinc-500">We care about your data. Read our <a class="font-medium text-zinc-950 underline" href="#">privacy&nbsp;policy</a>.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const track = document.getElementById('track-products');
+  if(!track) return;
+  track.innerHTML = PRODUCTS.map(p => `
+    <div class="snap-start shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+      <div class="group/prd relative w-full">
+        <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100">
+          <img alt="${p.name}" src="${p.img}" loading="lazy" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+          <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase text-zinc-900">NNNY</div>
+          <button type="button" class="card-add" data-add-to-cart="${p.id}" aria-label="Add ${p.name} to bag">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+          </button>
+        </div>
+        <div class="pt-3">
+          <div class="flex justify-between gap-3">
+            <a href="#/shop" class="text-sm/6 uppercase">${p.name}</a>
+            <p class="text-sm/6 uppercase whitespace-nowrap">$${p.price}</p>
+          </div>
+          <p class="mt-0.5 text-xs text-zinc-500 uppercase">${p.sub}</p>
+        </div>
+      </div>
+    </div>`).join('');
+});
+</script>
+</section>
+<section class="route" data-route="/shop">
+
+<!-- OPENING -->
+<section class="bg-[#ffe481]">
+  <div class="container pt-12 pb-12 sm:pt-16 sm:pb-16">
+    <div data-reveal class="max-w-4xl">
+      <h1 class="font-medium tracking-tight" style="font-size:clamp(2rem,4.6vw,3.5rem);line-height:1;">
+        Things you carry when<br>home is in <span class="font-serif-italic">two places.</span>
+      </h1>
+      <p class="mt-6 text-xs uppercase tracking-[0.2em] text-zinc-700">10 products · made in small runs · drawn in NY, made by hands in India</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRIMARY PRODUCT CAROUSEL -->
+<section class="mt-14 sm:mt-20">
+  <div class="container">
+    <div data-reveal class="flex items-end justify-between gap-6">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-6">
+        <div id="filter" class="flex flex-wrap gap-x-6 gap-y-2 text-[18px] font-medium uppercase">
+          <button data-filter="all"   class="link-sweep" aria-current="true">All</button>
+          <button data-filter="carry" class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Carry</button>
+          <button data-filter="wear"  class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Wear</button>
+          <button data-filter="wall"  class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Wall</button>
+          <button data-filter="small" class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Small things</button>
+        </div>
+      </div>
+      <div class="flex gap-2">
+      <button data-carousel="shop" data-dir="-1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+      </button>
+      <button data-carousel="shop" data-dir="1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+      </button>
+    </div>
+    </div>
+  </div>
+  <div id="track-shop" tabindex="0" role="region" aria-label="All products"
+       class="track no-scrollbar mt-8 flex gap-5 overflow-x-auto snap-x scroll-px-6 px-6 pb-2 focus:outline-none"></div>
+</section>
+
+<!-- FEATURED OBJECT -->
+<section class="mt-20 sm:mt-28">
+  <div data-reveal-stagger class="grid grid-cols-1 lg:grid-cols-2">
+    <div class="relative aspect-[4/5] lg:aspect-auto lg:min-h-[560px] overflow-hidden bg-zinc-100">
+      <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=1400" alt="Bombay Brooklyn Subway Local" class="h-full w-full product-cover">
+    </div>
+    <div class="flex flex-col justify-center bg-[#ffe481] px-6 py-16 sm:px-14 lg:px-16">
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-700">Product 03</p>
+      <h2 class="mt-5 font-medium" style="font-size:clamp(2.4rem,5vw,4rem);line-height:.98;">
+        Bombay.<br>Brooklyn.<br><span class="font-serif-italic">Same local.</span>
+      </h2>
+      <p class="mt-7 max-w-md text-sm/7 uppercase text-zinc-700">One line runs through both cities in your head. The 8:14 fast to Churchgate, the L into the city — different maps, same muscle memory. Embroidered by hand, carried anywhere.</p>
+      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <a href="#/shop" class="group/btn inline-flex items-center justify-between gap-5 rounded-full border border-zinc-950 hover:bg-zinc-950 hover:text-white py-2 pr-2 pl-6 text-sm font-medium uppercase tracking-wide transition">View the product<span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950 text-white transition-transform duration-300 group-hover/btn:translate-x-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a href="#/about#origin" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Read why we made this <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECOND CAROUSEL — best sellers, visually distinct -->
+<section class="container mt-24 sm:mt-32">
+  <div data-reveal class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <h2 class="font-medium" style="font-size:clamp(2rem,4.5vw,3.4rem);line-height:1;">
+      Products people<br>keep <span class="font-serif-italic">coming back for.</span>
+    </h2>
+    <div class="flex gap-2">
+      <button data-carousel="return" data-dir="-1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+      </button>
+      <button data-carousel="return" data-dir="1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="track-return" tabindex="0" role="region" aria-label="Best sellers"
+       class="track no-scrollbar mt-10 flex gap-5 overflow-x-auto snap-x scroll-px-6 pb-2 focus:outline-none"></div>
+</section>
+
+<!-- END CTA -->
+<section class="mt-24 sm:mt-32">
+  <div class="bg-[#ECFF9F]">
+    <div data-reveal class="container flex flex-col items-start gap-10 py-20 lg:flex-row lg:items-end lg:justify-between lg:py-28">
+      <h2 class="font-medium text-[#313d00]" style="font-size:clamp(2.2rem,5vw,4rem);line-height:1;">
+        Not sure what feels<br>like <span class="font-serif-italic">home yet?</span>
+      </h2>
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-4">
+        <a href="#/about#people" class="group/btn inline-flex items-center justify-between gap-5 rounded-full border border-zinc-950 hover:bg-zinc-950 hover:text-white py-2 pr-2 pl-6 text-sm font-medium uppercase tracking-wide transition">Meet the hands<span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950 text-white transition-transform duration-300 group-hover/btn:translate-x-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a href="#/about#origin" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">The story behind the product <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const track = document.getElementById('track-shop');
+  const render = (f) => {
+    const list = (f==='all') ? PRODUCTS : PRODUCTS.filter(p => p.cat.includes(f));
+    track.style.opacity = 0;
+    setTimeout(() => {
+      track.innerHTML = list.map(p => NNNY.productCard(p, 'basis-[86%] sm:basis-[47%] lg:basis-[32%] xl:basis-[30%]')).join('');
+      track.scrollLeft = 0;
+      if (track._updateCounter) track._updateCounter();
+      track.style.opacity = 1;
+    }, 180);
+  };
+  track.style.transition = 'opacity .25s ease';
+  render('all');
+  document.querySelectorAll('#filter [data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#filter [data-filter]').forEach(b => {
+        b.removeAttribute('aria-current'); b.classList.add('text-zinc-400');
+      });
+      btn.setAttribute('aria-current','true'); btn.classList.remove('text-zinc-400');
+      render(btn.dataset.filter);
+    });
+  });
+  // best sellers = a curated subset, wide cards
+  const ret = document.getElementById('track-return');
+  ['bombay-brooklyn-subway-local','hoodie-newyork','vada-pav-mumbai-manhattan','nari-newyork','bombay-brooklyn-tote']
+    .forEach(id => { const p = byId(id); if (p) ret.insertAdjacentHTML('beforeend', NNNY.wideCard(p)); });
+});
+</script>
+
+</section>
+<section class="route" data-route="/about">
+
+<!-- 01 · STATEMENT HERO -->
+<section id="origin" class="os-anchor">
+  <div class="flex flex-col lg:flex-row lg:items-stretch lg:min-h-[calc(100vh-74px)]">
+    <!-- left: statement copy, aligned to the container's left edge -->
+    <div data-reveal class="lg:flex-[3] self-center py-10 pr-6 pl-6 sm:pl-10 sm:py-14 xl:pl-[calc((100vw-1360px)/2)]">
+      <div class="max-w-xl">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs uppercase tracking-[0.25em] text-zinc-500">
+          <span>Our Story</span><span class="h-px w-8 bg-zinc-950/25"></span>
+          <span>Bombay 19.0760° N</span><span class="h-px w-8 bg-zinc-950/25"></span><span>New York 40.7128° N</span>
+        </div>
+        <h1 class="mt-10 font-medium tracking-tight" style="font-size:clamp(2.4rem,5.5vw,4rem);line-height:.98;">
+          We make the things<br>you carry <span class="font-serif-italic">between</span><br>two homes.
+        </h1>
+        <p class="mt-8 max-w-md text-lg/8 text-zinc-600">Never Not New York began with a feeling that was hard to explain and easy to recognise — building a life somewhere new while still carrying the old one with you.</p>
+        <a href="#/about#distance" class="mt-12 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-zinc-500 link-sweep">The story <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      </div>
+    </div>
+    <!-- right: image, bleeds to the top and right edge; left edge merges into white -->
+    <div data-reveal class="relative lg:flex-[2] min-h-[360px]">
+      <img src="storymain.jpg" alt="Never Not New York — between two homes" class="h-full w-full object-cover lg:absolute lg:inset-0">
+      <div class="pointer-events-none absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r from-white via-white/60 to-transparent"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · FOUNDING NARRATIVE -->
+<section id="distance" class="os-anchor container mt-8 sm:mt-12">
+  <div class="mx-auto max-w-4xl border-t border-zinc-950/10 pt-14 sm:pt-20">
+    <p data-reveal class="text-xs uppercase tracking-[0.25em] text-zinc-500">12,542 km between two homes</p>
+    <div data-reveal-stagger class="mt-10 space-y-10 sm:space-y-12">
+      <p class="font-medium" style="font-size:clamp(1.55rem,3.3vw,2.5rem);line-height:1.2;">It starts the way these things usually do. You move. You memorise a new subway map, learn which train car stops nearest the exit, find your coffee place, and slowly stop converting the prices back into rupees.</p>
+      <p class="font-medium text-zinc-500" style="font-size:clamp(1.4rem,2.9vw,2.1rem);line-height:1.26;">And then, on one completely ordinary Tuesday, you miss something impossibly specific. A platform announcement. A vada pav on the walk home. The exact sound of a place that is half a world away.</p>
+      <p class="font-medium" style="font-size:clamp(1.55rem,3.3vw,2.5rem);line-height:1.2;">So we started making products for that feeling — drawn in New York, made by hands in India. Small things that carry a very specific version of <span class="font-serif-italic">home.</span></p>
+    </div>
+    <div class="mt-12"><a href="#/shop" class="group/btn inline-flex items-center justify-between gap-5 rounded-full border border-zinc-950 hover:bg-zinc-950 hover:text-white py-2 pr-2 pl-6 text-sm font-medium uppercase tracking-wide transition">Shop the products<span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950 text-white transition-transform duration-300 group-hover/btn:translate-x-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></div>
+  </div>
+</section>
+
+<!-- 03 · SPOTLIGHTS (alternating image + text) -->
+<section id="cities" class="os-anchor mt-24 sm:mt-36">
+  <div class="container">
+    <div data-reveal class="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="relative aspect-[4/5] overflow-hidden rounded-lg bg-zinc-100">
+        <img src="https://nevernotnewyork.com/cdn/shop/files/DSC01386.jpg?v=1765205165&width=1200" alt="Made by hand in India" loading="lazy" class="h-full w-full product-cover">
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Mumbai · 19.0760° N</p>
+        <h2 class="mt-4 font-medium" style="font-size:clamp(2rem,4vw,3.2rem);line-height:1.02;">Made by hand,<br><span class="font-serif-italic">not by machine.</span></h2>
+        <p class="mt-6 max-w-md text-base/7 text-zinc-600">Painted, block-printed, stitched and embroidered by artisans across India. The small differences aren't defects — they're the signature of a piece that passed through real hands before it reached yours.</p>
+        <a href="#/about#hands" class="link-sweep mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">See how it's made <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-20 sm:mt-28">
+    <div data-reveal class="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="order-2 lg:order-1">
+        <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">New York · 40.7128° N</p>
+        <h2 class="mt-4 font-medium" style="font-size:clamp(2rem,4vw,3.2rem);line-height:1.02;">Drawn where the<br>two lines <span class="font-serif-italic">meet.</span></h2>
+        <p class="mt-6 max-w-md text-base/7 text-zinc-600">Every product is designed in New York — the subway you memorised, the vada pav you miss, the commute that runs through both cities in your head. One line, two islands, the same muscle memory.</p>
+      </div>
+      <div class="order-1 lg:order-2 relative aspect-[4/5] overflow-hidden rounded-lg bg-zinc-100">
+        <img src="https://nevernotnewyork.com/cdn/shop/files/5F0604DA-8628-4E67-AE2C-C545FDDDD052.jpg?v=1768765207&width=1200" alt="Designed in New York" loading="lazy" class="h-full w-full product-cover">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · THE MAKING — numbered process -->
+<section id="hands" class="os-anchor container mt-24 sm:mt-36">
+  <div data-reveal class="max-w-3xl">
+    <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">How it is made</p>
+    <h2 class="mt-4 font-medium" style="font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1;">Real hands.<br><span class="font-serif-italic">Real results.</span></h2>
+    <p class="mt-6 max-w-md text-base/7 text-zinc-600">Four crafts, four ways home travels. Every piece passes through hands before it reaches yours.</p>
+  </div>
+  <div class="mt-16 sm:mt-24 space-y-16 sm:space-y-28">
+    <article data-reveal class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-5"><div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100"><img src="https://nevernotnewyork.com/cdn/shop/files/DSC01470.jpg?v=1765205370&width=1000" alt="The brush" loading="lazy" class="h-full w-full product-cover"></div></div>
+      <div class="lg:col-span-7"><div class="flex items-center gap-5"><span class="text-sm tabular-nums tracking-[0.25em] text-zinc-400">01</span><span class="h-px flex-1 bg-zinc-950/12"></span></div><h3 class="mt-6 font-medium" style="font-size:clamp(1.9rem,3.4vw,2.8rem);line-height:1.02;">The Brush</h3><p class="mt-5 max-w-md text-base/7 text-zinc-600">Painted by hand, one wall at a time. No two are completely identical — that isn't a flaw in the process, it is the process.</p></div>
+    </article>
+    <article data-reveal class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-7 lg:order-1"><div class="flex items-center gap-5"><span class="text-sm tabular-nums tracking-[0.25em] text-zinc-400">02</span><span class="h-px flex-1 bg-zinc-950/12"></span></div><h3 class="mt-6 font-medium" style="font-size:clamp(1.9rem,3.4vw,2.8rem);line-height:1.02;">The Block</h3><p class="mt-5 max-w-md text-base/7 text-zinc-600">Hand-carved wooden blocks, inked and pressed one repeat at a time — a craft generations older than either skyline.</p></div>
+      <div class="lg:col-span-5 lg:order-2"><div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100"><img src="https://nevernotnewyork.com/cdn/shop/files/8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=1000" alt="The block" loading="lazy" class="h-full w-full product-cover"></div></div>
+    </article>
+    <article data-reveal class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-5"><div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100"><img src="https://nevernotnewyork.com/cdn/shop/files/DSC01357.jpg?v=1765205099&width=1000" alt="The needle" loading="lazy" class="h-full w-full product-cover"></div></div>
+      <div class="lg:col-span-7"><div class="flex items-center gap-5"><span class="text-sm tabular-nums tracking-[0.25em] text-zinc-400">03</span><span class="h-px flex-1 bg-zinc-950/12"></span></div><h3 class="mt-6 font-medium" style="font-size:clamp(1.9rem,3.4vw,2.8rem);line-height:1.02;">The Needle</h3><p class="mt-5 max-w-md text-base/7 text-zinc-600">Cut, stitched and embroidered by artisans in India, then finished for the everyday — seams doubled, zippers secured.</p></div>
+    </article>
+    <article data-reveal class="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+      <div class="lg:col-span-7 lg:order-1"><div class="flex items-center gap-5"><span class="text-sm tabular-nums tracking-[0.25em] text-zinc-400">04</span><span class="h-px flex-1 bg-zinc-950/12"></span></div><h3 class="mt-6 font-medium" style="font-size:clamp(1.9rem,3.4vw,2.8rem);line-height:1.02;">The Finish</h3><p class="mt-5 max-w-md text-base/7 text-zinc-600">The last pair of hands. Every product is checked, finished and prepared before it begins travelling 12,542 km to you.</p></div>
+      <div class="lg:col-span-5 lg:order-2"><div class="relative aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100"><img src="https://nevernotnewyork.com/cdn/shop/files/FullSizeRender_7e37b352-807e-452c-bfc3-9dbd91b1b797.jpg?v=1780760165&width=1000" alt="The finish" loading="lazy" class="h-full w-full product-cover"></div></div>
+    </article>
+  </div>
+</section>
+
+<!-- 05 · THE PEOPLE -->
+<section id="people" class="os-anchor container mt-24 sm:mt-36">
+  <div data-reveal class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <div class="max-w-2xl">
+      <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">The People</p>
+      <h2 class="mt-4 font-medium" style="font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1;">Same line.<br><span class="font-serif-italic">Different stops.</span></h2>
+      <p class="mt-6 max-w-md text-base/7 text-zinc-600">People who built a life somewhere new and still remember exactly where they got on.</p>
+    </div>
+    <div class="flex gap-2">
+      <button data-carousel="people" data-dir="-1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg></button>
+      <button data-carousel="people" data-dir="1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+    </div>
+  </div>
+  <div id="track-people" tabindex="0" role="region" aria-label="The passengers" class="track no-scrollbar mt-12 flex items-start gap-5 overflow-x-auto snap-x scroll-px-6 pb-2 focus:outline-none"></div>
+  <p class="mt-6 text-[11px] uppercase tracking-[0.2em] text-zinc-400">Editorial story fragments from the community — not verified customer reviews.</p>
+</section>
+
+<!-- 06 · MISSION & VISION -->
+<section id="why" class="os-anchor mt-24 sm:mt-36">
+  <div class="band-lime border-y border-[#d5f35b]">
+    <div class="container py-20 sm:py-28">
+      <div data-reveal class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-5">
+          <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">Mission &amp; Vision</p>
+          <h2 class="mt-4 font-medium" style="font-size:clamp(2rem,4vw,3.2rem);line-height:1.02;">A piece of home<br>on every <span class="font-serif-italic">shoulder.</span></h2>
+        </div>
+        <div class="lg:col-span-7 space-y-6 text-base/8 text-zinc-700 sm:text-lg/8">
+          <p>We want to put a piece of home on shelves, walls and shoulders between two worlds — not because it's trending, but because it's always meant something, and most people just never had the right thing to carry it with.</p>
+          <p>Never Not New York exists to make that thing: everyday products drawn from the details people miss — a commute, a phrase, a street, a sound. Made in small runs, by real hands, for people who don't believe belonging has to be singular.</p>
+          <p class="text-zinc-500">We're only getting started.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · THE OBJECTS -->
+<section id="products-story" class="os-anchor container mt-24 sm:mt-36">
+  <div data-reveal class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <div class="max-w-2xl">
+      <p class="text-xs uppercase tracking-[0.25em] text-zinc-500">The Products</p>
+      <h2 class="mt-4 font-medium" style="font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1.02;">Stories are difficult<br>to <span class="font-serif-italic">carry.</span> Products are easier.</h2>
+    </div>
+    <div class="flex gap-2">
+      <button data-carousel="storyproducts" data-dir="-1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg></button>
+      <button data-carousel="storyproducts" data-dir="1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+    </div>
+  </div>
+  <div id="track-storyproducts" tabindex="0" role="region" aria-label="The products" class="track no-scrollbar mt-12 flex gap-5 overflow-x-auto snap-x scroll-px-6 pb-2 focus:outline-none"></div>
+  <div class="mt-10"><a href="#/shop" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Explore all products <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</section>
+
+<!-- ENDING -->
+<section class="mt-24 sm:mt-36">
+  <div class="bg-[#ffe481]">
+    <div data-reveal class="container flex flex-col items-start gap-10 py-20 lg:flex-row lg:items-end lg:justify-between lg:py-28">
+      <h2 class="font-medium" style="font-size:clamp(2.2rem,5vw,4rem);line-height:1;">You don't have to<br>choose <span class="font-serif-italic">one</span> home.</h2>
+      <div class="max-w-md">
+        <p class="text-sm/7 uppercase text-zinc-700">Somewhere between where you started and where you are going, there is room for both.</p>
+        <div class="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a href="#/shop" class="group/btn inline-flex items-center justify-between gap-5 rounded-full border border-zinc-950 hover:bg-zinc-950 hover:text-white py-2 pr-2 pl-6 text-sm font-medium uppercase tracking-wide transition">Meet the products<span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950 text-white transition-transform duration-300 group-hover/btn:translate-x-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a href="#/faq" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Questions? Start here <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const people = document.getElementById('track-people');
+  if (people) {
+    people.innerHTML = PASSENGERS.map(p => `
+      <article class="story-card snap-start shrink-0 basis-[80%] sm:basis-[46%] lg:basis-[31%]">
+        <a href="#/shop" class="group/prd block">
+          <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100">
+            <img src="${p.img}" alt="${p.name}" loading="lazy" class="h-full w-full product-cover transition duration-700 group-hover/prd:scale-105">
+            <span class="absolute top-3 left-3 rounded-full bg-white px-3 py-1 text-xs uppercase">Passenger ${p.n}</span>
+          </div>
+        </a>
+        <div class="flex items-start justify-between gap-4 pt-4">
+          <div class="story-city">
+            <p class="text-sm uppercase font-medium">${p.name}</p>
+            <p class="mt-0.5 text-xs uppercase text-zinc-500">${p.city} · ${p.from}</p>
+          </div>
+          <span class="story-arrow mt-1 text-zinc-950"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+        <blockquote class="mt-3 max-w-xs text-sm/6 text-zinc-600">“${p.quote}”</blockquote>
+      </article>`).join('');
+  }
+  const so = document.getElementById('track-storyproducts');
+  if (so) {
+    PRODUCTS.forEach(p => so.insertAdjacentHTML('beforeend', NNNY.productCard(p, 'basis-[86%] sm:basis-[44%] lg:basis-[30.7%]')));
+  }
+});
+</script>
+
+</section>
+<section class="route" data-route="/faq">
+
+<!-- OPENING -->
+<section class="bg-[#ffe481]">
+  <div class="container pt-12 pb-12 sm:pt-16 sm:pb-16">
+    <div data-reveal class="max-w-4xl">
+      <p class="text-xs uppercase tracking-[0.2em] text-zinc-700">Questions, answered</p>
+      <h1 class="mt-6 font-medium tracking-tight" style="font-size:clamp(2rem,4.4vw,3.3rem);line-height:1.05;">
+        Things you might want to know before<br>something <span class="font-serif-italic">travels</span> 12,542 km to you.
+      </h1>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY TABS -->
+<section class="container">
+  <div id="faq-tabs" data-reveal class="flex flex-wrap gap-x-8 gap-y-3 py-5 text-sm uppercase tracking-wide">
+    <button data-tab="all"      class="link-sweep" aria-current="true">All</button>
+    <button id="tab-orders"   data-tab="orders"   class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Orders</button>
+    <button id="tab-shipping" data-tab="shipping" class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Shipping</button>
+    <button id="tab-returns"  data-tab="returns"  class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">Returns</button>
+    <button data-tab="products"  class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">The Products</button>
+    <button data-tab="making"   class="link-sweep text-zinc-400 hover:text-zinc-950 transition-colors">The Making</button>
+  </div>
+</section>
+
+<!-- ACCORDION -->
+<section class="container mt-6" id="shipping">
+  <div id="faq-list">
+<div class="faq-row" data-cat="products">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">01</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">Where are the products made?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">Every piece is drawn in New York and made by hand by artisans in India — painted, block-printed, stitched and embroidered before it's finished for the everyday.</p></div>
+    </div>
+<div class="faq-row" data-cat="shipping">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">02</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">Do you ship internationally?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">Yes. We ship worldwide from small runs, with tracking on every order. Delivery windows depend on where home currently is for you.</p></div>
+    </div>
+<div class="faq-row" data-cat="making">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">03</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">Why does my piece look slightly different?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">Many of our pieces pass through real hands — brushes, blocks and needles. Small differences are part of the process, not defects.</p></div>
+    </div>
+<div class="faq-row" data-cat="shipping">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">04</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">How long does shipping take?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">Most orders leave within a few working days. International transit typically adds one to two weeks, since pieces travel roughly 12,542 km to reach you.</p></div>
+    </div>
+<div class="faq-row" data-cat="returns">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">05</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">Can I return an item?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">Yes, within 14 days of delivery for unused pieces in original condition. Reach out and a real person will help you sort it out.</p></div>
+    </div>
+<div class="faq-row" data-cat="orders">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">06</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">How do I track my order?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">You'll get a tracking link by email the moment your order ships. If it hasn't arrived, write to us and we'll trace it with you.</p></div>
+    </div>
+<div class="faq-row" data-cat="making">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">07</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">How should I care for a hand-made piece?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">Gentle cold wash, dry flat, and skip the machine where you can. Hand-work lasts longest when it's handled by hand.</p></div>
+    </div>
+<div class="faq-row" data-cat="orders">
+      <button class="faq-q flex w-full items-center gap-6 py-7 text-left sm:py-9">
+        <span class="w-8 shrink-0 text-sm uppercase tracking-[0.2em] text-zinc-400">08</span>
+        <span class="flex-1 text-lg sm:text-2xl font-medium uppercase">Can I change or cancel an order?</span>
+        <span class="faq-sign shrink-0 text-2xl leading-none text-zinc-500">+</span>
+      </button>
+      <div class="faq-a"><p class="max-w-2xl pb-8 pl-14 text-sm/7 text-zinc-600">If it hasn't shipped yet, almost always. Message us quickly with your order number and we'll catch it before it leaves.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEXTUAL CRAFT LINK -->
+<section class="container mt-16 sm:mt-20">
+  <div data-reveal class="border-t border-zinc-950/10 pt-8">
+    <a href="#/about#hands" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Read how it is made <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</section>
+
+<!-- CONTEXTUAL PRODUCT CAROUSEL -->
+<section class="container mt-24 sm:mt-32">
+  <div data-reveal class="flex items-end justify-between gap-6">
+    <h2 class="font-medium" style="font-size:clamp(1.6rem,3.5vw,2.6rem);line-height:1;">While you're <span class="font-serif-italic">here.</span></h2>
+    <div class="flex gap-2">
+      <button data-carousel="mini" data-dir="-1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Previous">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+      </button>
+      <button data-carousel="mini" data-dir="1" class="inline-flex shrink-0 items-center justify-center rounded-full border border-zinc-950/15 p-3 sm:p-3.5 transition hover:border-zinc-950" aria-label="Next">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="track-mini" tabindex="0" role="region" aria-label="A few products"
+       class="track no-scrollbar mt-8 flex gap-4 overflow-x-auto snap-x scroll-px-6 pb-2 focus:outline-none"></div>
+  <div class="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+    <a href="#/shop" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Explore the products <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a href="#/about" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-zinc-500 hover:text-zinc-950 transition-colors">Our story <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</section>
+
+<!-- END CTA -->
+<section id="contact" class="mt-24 sm:mt-32">
+  <div class="bg-[#ffe481]">
+    <div data-reveal class="container flex flex-col items-start gap-8 py-20 lg:flex-row lg:items-end lg:justify-between lg:py-28">
+      <div>
+        <h2 class="font-medium" style="font-size:clamp(2.2rem,5vw,4rem);line-height:1;">Still <span class="font-serif-italic">wondering?</span></h2>
+        <p class="mt-5 max-w-md text-sm/7 uppercase text-zinc-700">Send us a note. A real person will read it.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-4">
+        <a href="mailto:hello@nevernotnewyork.com" class="group/btn inline-flex items-center justify-between gap-5 rounded-full border border-zinc-950 hover:bg-zinc-950 hover:text-white py-2 pr-2 pl-6 text-sm font-medium uppercase tracking-wide transition">Get in touch<span class="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950 text-white transition-transform duration-300 group-hover/btn:translate-x-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a href="#" class="link-sweep inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wide">Instagram <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // accordion
+  document.querySelectorAll('#faq-list .faq-q').forEach(q => {
+    q.addEventListener('click', () => q.closest('.faq-row').classList.toggle('open'));
+  });
+  // tabs
+  document.querySelectorAll('#faq-tabs [data-tab]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#faq-tabs [data-tab]').forEach(t => { t.removeAttribute('aria-current'); t.classList.add('text-zinc-400'); });
+      tab.setAttribute('aria-current','true'); tab.classList.remove('text-zinc-400');
+      const c = tab.dataset.tab;
+      document.querySelectorAll('#faq-list .faq-row').forEach(r => {
+        const show = (c==='all' || r.dataset.cat===c);
+        r.style.display = show ? '' : 'none';
+        r.classList.remove('open');
+      });
+    });
+  });
+  // deep-link: open tab from hash (e.g. #tab-returns)
+  const h = location.hash.replace('#','');
+  if (h) { const tb = document.getElementById(h); if (tb && tb.dataset.tab) tb.click(); }
+  // mini carousel
+  const mini = document.getElementById('track-mini');
+  PRODUCTS.slice(0,7).forEach(p => mini.insertAdjacentHTML('beforeend', NNNY.compactCard(p)));
+});
+</script>
+
+</section>
+</main>
+
+<footer class="mt-24 sm:mt-32 bg-zinc-950 text-white">
+  <div class="container py-16">
+    <div data-reveal-stagger class="grid grid-cols-2 gap-8 lg:grid-cols-6">
+      <div class="col-span-2">
+        <img src="logo.png" alt="Never Not New York" class="h-14 w-auto invert">
+        <p class="mt-4 max-w-xs text-sm/6 uppercase text-zinc-400">Never not home. Made by hands in India, designed in New York.</p>
+      </div>
+      <div><p class="text-xs uppercase tracking-wide text-zinc-400">Shop</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#/shop" class="text-zinc-200 hover:text-white transition">Totes</a></li>
+          <li><a href="#/shop" class="text-zinc-200 hover:text-white transition">Hoodies</a></li>
+          <li><a href="#/shop" class="text-zinc-200 hover:text-white transition">Wall pieces</a></li>
+          <li><a href="#/shop" class="text-zinc-200 hover:text-white transition">Best sellers</a></li>
+        </ul></div>
+      <div><p class="text-xs uppercase tracking-wide text-zinc-400">Our Story</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#/about#origin" class="text-zinc-200 hover:text-white transition">Origin</a></li>
+          <li><a href="#/about#distance" class="text-zinc-200 hover:text-white transition">The distance</a></li>
+          <li><a href="#/about#hands" class="text-zinc-200 hover:text-white transition">The hands</a></li>
+          <li><a href="#/about#people" class="text-zinc-200 hover:text-white transition">The passengers</a></li>
+        </ul></div>
+      <div><p class="text-xs uppercase tracking-wide text-zinc-400">Help</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#/faq" class="text-zinc-200 hover:text-white transition">FAQ</a></li>
+          <li><a href="#/faq#tab-shipping" class="text-zinc-200 hover:text-white transition">Shipping</a></li>
+          <li><a href="#/faq#tab-returns" class="text-zinc-200 hover:text-white transition">Returns</a></li>
+          <li><a href="#/faq#contact" class="text-zinc-200 hover:text-white transition">Contact</a></li>
+        </ul></div>
+      <div><p class="text-xs uppercase tracking-wide text-zinc-400">Legal</p>
+        <ul class="mt-4 space-y-3 text-sm uppercase">
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Terms of Service</a></li>
+          <li><a href="#" class="text-zinc-200 hover:text-white transition">Privacy Policy</a></li>
+        </ul></div>
+    </div>
+    <div class="mt-14 flex flex-col gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-xs uppercase text-zinc-400">© 2026 Never Not New York. Never not home.</p>
+      <div class="flex gap-5 text-xs uppercase text-zinc-400">
+        <a href="#" class="hover:text-white transition">Instagram</a>
+        <a href="#" class="hover:text-white transition">Facebook</a>
+        <a href="#" class="hover:text-white transition">@nevernotnewyork_</a>
+      </div>
+    </div>
+    <p class="mt-10 text-[10px] uppercase tracking-[0.3em] text-zinc-600">BUILD R43 · SINGLE-FILE · EDITORIAL STORY</p>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   Never Not New York — shared content data
+   Product set is identical to the homepage; categories added for the
+   Shop filter (CARRY = totes, WEAR = hoodies/tees, WALL = wall pieces,
+   SMALL = small companion products). "story" links a product to a
+   passenger on the Stories page.
+   ===================================================================== */
+const CDN = "https://nevernotnewyork.com/cdn/shop/files/";
+
+const PRODUCTS = [
+  { id:"bombay-brooklyn-subway-local", name:"Bombay Brooklyn Subway Local", price:"38.00",
+    sub:"The commute you still hear.", cat:["carry"],
+    img:CDN+"DSC01357.jpg?v=1765205099&width=900" },
+  { id:"mumbai-manhattan-subway-local", name:"Mumbai Manhattan Subway Local", price:"38.00",
+    sub:"Two islands, one heartbeat.", cat:["carry"],
+    img:CDN+"DSC01386.jpg?v=1765205165&width=900" },
+  { id:"vada-pav-mumbai-manhattan", name:"Vada Pav — Mumbai to Manhattan", price:"38.00",
+    sub:"If you know, you know.", cat:["carry"],
+    img:CDN+"8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" },
+  { id:"hoodie-street", name:"Hoodie Street", price:"118.00",
+    sub:"For first winters.", cat:["wear"],
+    img:CDN+"F0FE7DA1-9D29-46AA-8588-7A1C902AC9EE.jpg?v=1768765205&width=900" },
+  { id:"bombay-brooklyn-tote", name:"Bombay Brooklyn Tote", price:"38.00",
+    sub:"The everyday between two cities.", cat:["carry"],
+    img:CDN+"DSC08573-min.jpg?v=1749659374&width=900" },
+  { id:"newyork-cat", name:"Newyork Cat", price:"38.00",
+    sub:"A small companion.", cat:["carry","small"],
+    img:CDN+"DSC01420.jpg?v=1765204895&width=900" },
+  { id:"nari-newyork", name:"Nari Newyork", price:"38.00",
+    sub:"Carried like a letter.", cat:["carry"],
+    img:CDN+"FullSizeRender_7e37b352-807e-452c-bfc3-9dbd91b1b797.jpg?v=1780760165&width=900" },
+  { id:"prioritize-yourself", name:"Prioritize Yourself", price:"38.00",
+    sub:"A note to self.", cat:["carry","small"],
+    img:CDN+"WhatsApp_Image_2025-10-02_at_3.49.17_PM_1.jpg?v=1759434740&width=900" },
+  { id:"hoodie-newyork", name:"Hoodie Newyork", price:"118.00",
+    sub:"The layer between you and the city.", cat:["wear"],
+    img:CDN+"5F0604DA-8628-4E67-AE2C-C545FDDDD052.jpg?v=1768765207&width=900" },
+  { id:"christmas-in-newyork", name:"Christmas in Newyork", price:"38.00",
+    sub:"The season, stitched.", cat:["carry","wall"],
+    img:CDN+"DSC01470.jpg?v=1765205370&width=900" },
+];
+
+/* Passengers — extends the homepage testimonials with numbers, cities,
+   and a linked product. Portrait images reuse product/lifestyle photography
+   as stand-ins; replace with real passenger photos when available. */
+const PASSENGERS = [
+  { n:"001", name:"Priya", city:"Jersey City", from:"formerly Andheri East",
+    quote:"I hung the subway print next to my H-1B approval. Both are maps of my life.",
+    product:"bombay-brooklyn-subway-local",
+    img:CDN+"DSC01357.jpg?v=1765205099&width=900" },
+  { n:"002", name:"Arjun", city:"Bushwick", from:"formerly Matunga",
+    quote:"The J train sounds nothing like the Harbour Line. Some mornings I hear it anyway.",
+    product:"mumbai-manhattan-subway-local",
+    img:CDN+"DSC01386.jpg?v=1765205165&width=900" },
+  { n:"003", name:"Sana", city:"Astoria", from:"formerly Bandra West",
+    quote:"Diwali here fits on one shelf of one store. So my apartment became the store.",
+    product:"christmas-in-newyork",
+    img:CDN+"DSC01470.jpg?v=1765205370&width=900" },
+  { n:"004", name:"Meera", city:"London", from:"formerly Delhi",
+    quote:"I gifted the Nari tote to my sister after three years apart. She held it like a letter.",
+    product:"nari-newyork",
+    img:CDN+"FullSizeRender_7e37b352-807e-452c-bfc3-9dbd91b1b797.jpg?v=1780760165&width=900" },
+  { n:"005", name:"Rohan", city:"Crown Heights", from:"formerly Pune",
+    quote:"I came for two years. That was nine years ago. Both things are still true.",
+    product:"vada-pav-mumbai-manhattan",
+    img:CDN+"8F29A8FC-8261-412D-A5B0-5E6EF5EF1DE3.jpg?v=1780275610&width=900" },
+];
+
+const byId = id => PRODUCTS.find(p => p.id === id);
+
+</script>
+<script>
+/* =====================================================================
+   Never Not New York — shared behaviors
+   ===================================================================== */
+(function () {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- scroll-reveal ---------- */
+  const revealEls = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  }
+
+  /* ---------- header state + hero parallax ---------- */
+  const header = document.querySelector('header');
+  const heroImg = document.querySelector('.hero-img');
+  const onScroll = () => {
+    if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+    if (heroImg && !reduce && window.scrollY > 0) {
+      const y = Math.min(window.scrollY, 700);
+      heroImg.style.transform = 'scale(1.02) translateY(' + (y * 0.06) + 'px)';
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- restrained parallax for [data-parallax] ---------- */
+  const paraEls = [...document.querySelectorAll('[data-parallax]')];
+  if (paraEls.length && !reduce) {
+    let ticking = false;
+    const run = () => {
+      const vh = window.innerHeight;
+      paraEls.forEach(el => {
+        const speed = parseFloat(el.dataset.parallax) || 0.08;
+        const r = el.getBoundingClientRect();
+        const mid = r.top + r.height / 2 - vh / 2;
+        el.style.transform = 'translateY(' + (-mid * speed) + 'px)';
+      });
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(run); ticking = true; }
+    }, { passive: true });
+    run();
+  }
+
+  /* ---------- mobile nav toggle ---------- */
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileNav = document.getElementById('mobile-nav');
+  if (menuBtn && mobileNav) {
+    menuBtn.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('hidden') === false;
+      menuBtn.setAttribute('aria-expanded', String(open));
+    });
+  }
+
+  /* ---------- smooth in-page anchor scrolling ---------- */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', ev => {
+      const id = a.getAttribute('href');
+      if (id.length > 1 && !id.startsWith('#/')) {
+        let target = null;
+        try { target = document.querySelector(id); } catch (e) { return; }
+        if (target) { ev.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      }
+    });
+  });
+
+  /* =====================================================================
+     Carousel engine
+     - native scroll-snap handles touch + trackpad + snapping
+     - pointer drag-to-scroll on desktop
+     - [data-carousel] / [data-dir] arrow buttons scroll the matching track
+     - [data-counter="ID"] shows NN / TT based on nearest snapped child
+     ===================================================================== */
+  function enableDrag(track) {
+    let down = false, startX = 0, startLeft = 0, moved = false;
+    track.classList.add('drag-scroll');
+    track.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'touch') return;         // let native touch scroll handle it
+      down = true; moved = false;
+      startX = e.clientX; startLeft = track.scrollLeft;
+      track.setPointerCapture(e.pointerId);
+    });
+    track.addEventListener('pointermove', e => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) { moved = true; track.classList.add('is-dragging'); }
+      track.scrollLeft = startLeft - dx;
+    });
+    const end = () => { down = false; track.classList.remove('is-dragging'); };
+    track.addEventListener('pointerup', end);
+    track.addEventListener('pointercancel', end);
+    track.addEventListener('pointerleave', end);
+    // suppress click after a drag
+    track.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+  }
+
+  function trackCards(track) { return [...track.children].filter(c => c.nodeType === 1); }
+
+  function activeIndex(track) {
+    const cards = trackCards(track);
+    const mid = track.scrollLeft + track.clientWidth / 2;
+    let best = 0, bestD = Infinity;
+    cards.forEach((c, i) => {
+      const center = c.offsetLeft + c.offsetWidth / 2;
+      const d = Math.abs(center - mid);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+
+  const pad2 = n => String(n).padStart(2, '0');
+
+  document.querySelectorAll('.track').forEach(track => {
+    enableDrag(track);
+    const id = track.id.replace('track-', '');
+    const counter = document.querySelector('[data-counter="' + id + '"]');
+    if (counter) {
+      const update = () => {
+        const total = trackCards(track).filter(c => c.offsetParent !== null).length || trackCards(track).length;
+        const cur = Math.min(activeIndex(track) + 1, total);
+        counter.textContent = pad2(cur) + ' / ' + pad2(total);
+      };
+      track._updateCounter = update;
+      let t;
+      track.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(update, 60); }, { passive: true });
+      update();
+    }
+  });
+
+  document.querySelectorAll('[data-carousel]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = document.getElementById('track-' + btn.dataset.carousel);
+      if (!t) return;
+      const dir = parseInt(btn.dataset.dir, 10);
+      const card = trackCards(t)[0];
+      const step = card ? card.offsetWidth + 20 : Math.round(t.clientWidth * 0.8);
+      t.scrollBy({ left: dir * step, behavior: 'smooth' });
+    });
+  });
+
+  /* passenger cards: expand/collapse the quote */
+  document.querySelectorAll('.pass-more').forEach(btn => {
+    const body = btn.parentElement.querySelector('.pass-body');
+    if (!body) return;
+    btn.addEventListener('click', () => {
+      const clamped = body.classList.toggle('line-clamp-2');
+      btn.textContent = clamped ? 'Read More' : 'Read Less';
+    });
+  });
+
+  /* keyboard support: focusable tracks scroll with arrow keys */
+  document.querySelectorAll('.track[tabindex]').forEach(track => {
+    track.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const card = trackCards(track)[0];
+      const step = card ? card.offsetWidth + 20 : 300;
+      track.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * step, behavior: 'smooth' });
+    });
+  });
+
+  /* =====================================================================
+     Card renderers (shared markup so cards stay identical across pages)
+     ===================================================================== */
+  window.NNNY = {
+    productCard(p, basis) {
+      basis = basis || 'basis-[85%] sm:basis-1/2 lg:basis-[38%] xl:basis-[30%]';
+      return `
+      <div class="snap-start shrink-0 ${basis}">
+        <div class="group/prd prd-reveal relative w-full">
+          <div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-zinc-100">
+            <img alt="${p.name}" src="${p.img}" loading="lazy" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+            <div class="absolute top-3 left-3 rounded-full bg-white px-3.5 py-1.5 text-xs leading-none uppercase text-zinc-900">NNNY</div>
+            <button type="button" class="card-add" data-add-to-cart="${p.id}" aria-label="Add ${p.name} to bag">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+            </button>
+          </div>
+          <div class="pt-3">
+            <div class="flex justify-between gap-3">
+              <a href="#" class="text-sm/6 uppercase">${p.name}</a>
+              <p class="text-sm/6 uppercase whitespace-nowrap">$${p.price}</p>
+            </div>
+            <p class="prd-sub text-xs text-zinc-500 uppercase">${p.sub}</p>
+          </div>
+        </div>
+      </div>`;
+    },
+    // wide landscape card for the "coming back for" carousel (visually distinct)
+    wideCard(p) {
+      return `
+      <div class="relative snap-start shrink-0 basis-[88%] sm:basis-[64%] lg:basis-[48%] xl:basis-[42%] border-l border-zinc-950/12 pl-5 first:border-l-0 first:pl-0">
+        <a href="#" class="group/prd block">
+          <div class="relative w-full aspect-[5/4] overflow-hidden rounded-lg bg-zinc-100">
+            <img alt="${p.name}" src="${p.img}" loading="lazy" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+          </div>
+          <div class="mt-4 flex items-baseline justify-between gap-4">
+            <p class="text-sm/6 uppercase font-medium">${p.name}</p>
+            <p class="text-sm/6 uppercase whitespace-nowrap">$${p.price}</p>
+          </div>
+          <p class="mt-1 max-w-xs text-xs text-zinc-500 uppercase">${p.sub}</p>
+        </a>
+        <button type="button" class="card-add" style="top:.75rem;right:.75rem" data-add-to-cart="${p.id}" aria-label="Add ${p.name} to bag">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+        </button>
+      </div>`;
+    },
+    // compact card for the FAQ "while you're here" strip
+    compactCard(p) {
+      return `
+      <div class="relative snap-start shrink-0 basis-[60%] sm:basis-[38%] lg:basis-[26%]">
+        <a href="#/shop" class="group/prd block">
+          <div class="relative w-full aspect-square overflow-hidden rounded-lg bg-zinc-100">
+            <img alt="${p.name}" src="${p.img}" loading="lazy" class="h-full w-full product-cover transition duration-500 group-hover/prd:scale-105">
+          </div>
+          <p class="mt-3 text-xs/5 uppercase">${p.name}</p>
+          <p class="text-xs uppercase text-zinc-500">$${p.price}</p>
+        </a>
+        <button type="button" class="card-add" style="top:.75rem;right:.75rem" data-add-to-cart="${p.id}" aria-label="Add ${p.name} to bag">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>
+        </button>
+      </div>`;
+    }
+  };
+})();
+
+</script>
+
+<script>
+(function(){
+  const sections = {};
+  document.querySelectorAll('[data-route]').forEach(s => sections[s.dataset.route] = s);
+  const navlinks = document.querySelectorAll('[data-navroute]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Parse "#/about#people" or "#/about/people" -> { route:'/about', anchor:'people' }.
+  // Returns null for empty hashes or plain in-page anchors (handled natively).
+  function parseHash(){
+    let raw = location.hash.replace(/^#/, '');
+    if (!raw || raw[0] !== '/') return null;
+    let route = raw, anchor = '';
+    const hi = raw.indexOf('#');
+    if (hi > 0){ route = raw.slice(0, hi); anchor = raw.slice(hi + 1); }
+    else {
+      const parts = raw.split('/');            // ['', 'about', 'people']
+      if (parts.length > 2 && sections['/' + parts[1]]){ route = '/' + parts[1]; anchor = parts.slice(2).join('/'); }
+    }
+    if (!sections[route]) route = '/';
+    return { route, anchor };
+  }
+  function goAnchor(anchor){
+    if (!anchor){ window.scrollTo(0, 0); return; }
+    const el = document.getElementById(anchor);
+    if (!el){ window.scrollTo(0, 0); return; }
+    requestAnimationFrame(() => el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }));
+    // some deep-links (e.g. #tab-returns) also want a click to open a panel
+    if (el.dataset && el.dataset.tab) el.click();
+  }
+  function show(route, anchor, force){
+    Object.keys(sections).forEach(k => sections[k].classList.toggle('is-active', k === route));
+    navlinks.forEach(a => { if (a.dataset.navroute === route) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+    const view = sections[route] || sections['/'];
+    if (force){ view.querySelectorAll('[data-reveal],[data-reveal-stagger]').forEach(el => el.classList.add('is-visible')); }
+    view.querySelectorAll('.track').forEach(t => { if (t._updateCounter) t._updateCounter(); });
+    const mn = document.getElementById('mobile-nav'); if (mn) mn.classList.add('hidden');
+    goAnchor(anchor);
+  }
+  window.addEventListener('hashchange', () => { const p = parseHash(); if (p !== null) show(p.route, p.anchor, true); });
+  const p0 = parseHash();
+  if (p0 !== null) show(p0.route, p0.anchor, p0.route !== '/');
+  else show('/', '', false);
+})();
+</script>
+
+<script>
+/* =====================================================================
+   Never Not New York — global mini cart
+   One shared system for every route (Home / Shop / Stories / About / FAQ).
+   State = [{id, qty}] only; product details resolved from PRODUCTS via
+   byId() so there is a single source of truth. Persists to localStorage.
+   ===================================================================== */
+(function () {
+  if (typeof PRODUCTS === 'undefined' || typeof byId === 'undefined') return;
+
+  const CFG = {
+    FREE_SHIPPING_THRESHOLD: 150,   // dollars — configurable free-shipping line
+    KEY: 'nnny-cart-v1',
+    OPEN_DELAY: 320                 // ms before the bag opens after add-to-cart
+  };
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pad2  = n => String(n).padStart(2, '0');
+  const cents = p => Math.round(parseFloat(p) * 100);
+  const money = c => '$' + (c / 100).toFixed(2);
+
+  /* ---------------- state ---------------- */
+  let state = load();
+  function load() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CFG.KEY) || '[]');
+      if (!Array.isArray(raw)) return [];
+      return raw
+        .filter(i => i && typeof i.id === 'string' && byId(i.id))   // validate against catalogue
+        .map(i => ({ id: i.id, qty: Math.max(1, Math.min(99, parseInt(i.qty, 10) || 1)) }));
+    } catch (e) { return []; }
+  }
+  const persist = () => { try { localStorage.setItem(CFG.KEY, JSON.stringify(state)); } catch (e) {} };
+
+  const lines       = () => state.map(i => Object.assign({}, byId(i.id), { qty: i.qty }));
+  const count       = () => state.reduce((s, i) => s + i.qty, 0);
+  const subtotalC   = () => lines().reduce((s, l) => s + cents(l.price) * l.qty, 0);
+
+  /* ---------------- DOM (injected once) ---------------- */
+  const root = document.createElement('div');
+  root.className = 'nnny-cart-root';
+  root.id = 'nnny-cart';
+  root.hidden = true;
+  root.innerHTML = `
+    <div class="nnny-cart-overlay" data-cart-overlay></div>
+    <aside class="nnny-cart-panel" role="dialog" aria-modal="true" aria-labelledby="nnny-cart-title" tabindex="-1">
+      <div class="nnny-cart-head">
+        <span id="nnny-cart-title" class="nnny-cart-eyebrow" style="letter-spacing:.2em">Your Bag</span>
+        <div class="flex items-center gap-3">
+          <span class="nnny-cart-eyebrow text-zinc-500" data-cart-productcount>00 Products</span>
+          <button type="button" class="nnny-cart-close" data-cart-close aria-label="Close bag">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="nnny-cart-scroll" data-cart-scroll></div>
+      <div class="nnny-cart-foot" data-cart-foot hidden></div>
+    </aside>`;
+  document.body.appendChild(root);
+
+  const overlay    = root.querySelector('[data-cart-overlay]');
+  const panel      = root.querySelector('.nnny-cart-panel');
+  const scrollEl   = root.querySelector('[data-cart-scroll]');
+  const footEl     = root.querySelector('[data-cart-foot]');
+  const objCountEl = root.querySelector('[data-cart-productcount]');
+  const triggers   = () => document.querySelectorAll('[data-cart-trigger]');
+  const badges     = () => document.querySelectorAll('[data-cart-count]');
+
+  const cartSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6 5 3H2"/></svg>`;
+  const arrowSvg = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+
+  /* ---------------- render ---------------- */
+  function shippingHTML() {
+    const sub = subtotalC(), thr = CFG.FREE_SHIPPING_THRESHOLD * 100;
+    const pct = Math.min(100, Math.round((sub / thr) * 100));
+    if (sub >= thr) {
+      return `<div class="nnny-ship">
+        <span class="nnny-ship-label free">Your bag travels free.</span>
+        <div class="nnny-ship-track"><div class="nnny-ship-fill" style="width:100%"></div></div>
+      </div>`;
+    }
+    const away = (thr - sub) / 100;
+    const awayTxt = Number.isInteger(away) ? '$' + away : money(thr - sub);
+    return `<div class="nnny-ship">
+      <span class="nnny-ship-label">You're ${awayTxt} away from free shipping</span>
+      <div class="nnny-ship-track"><div class="nnny-ship-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }
+
+  function itemHTML(l) {
+    return `
+    <article class="nnny-cart-item" data-line="${l.id}">
+      <div class="nnny-ci-img"><img src="${l.img}" alt="${l.name}"></div>
+      <div class="nnny-ci-body">
+        <div class="nnny-ci-top">
+          <div class="min-w-0">
+            <a href="#/shop" class="nnny-ci-title link-sweep" data-cart-close>${l.name}</a>
+            <p class="nnny-ci-sub">${l.sub}</p>
+          </div>
+          <p class="nnny-ci-price">$${l.price}</p>
+        </div>
+        <div class="nnny-ci-bottom">
+          <div class="nnny-qty">
+            <button type="button" data-dec aria-label="Decrease quantity of ${l.name}">&minus;</button>
+            <span aria-live="polite">${l.qty}</span>
+            <button type="button" data-inc aria-label="Increase quantity of ${l.name}">+</button>
+          </div>
+          <button type="button" class="nnny-remove link-sweep" data-remove>Remove</button>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function footerHTML() {
+    const sub = subtotalC();
+    return `
+      <div class="nnny-sub-row">
+        <span class="nnny-cart-eyebrow text-zinc-500" style="letter-spacing:.14em">Subtotal</span>
+        <span class="nnny-sub-total">${money(sub)}</span>
+      </div>
+      <p class="nnny-sub-note">Shipping calculated at checkout.</p>
+      <button type="button" class="nnny-checkout" data-checkout>
+        <span>Checkout</span>
+        <span class="amt">${money(sub)}<span class="arrow">${arrowSvg}</span></span>
+      </button>
+      <button type="button" class="nnny-continue" data-cart-close>Continue <span class="link-sweep">shopping</span></button>`;
+  }
+
+  function suggestCard(p) {
+    return `
+    <div class="nnny-suggest-card">
+      <a href="#/shop" class="block" data-cart-close>
+        <div class="sc-img"><img src="${p.img}" alt="${p.name}"></div>
+        <p class="sc-name">${p.name}</p>
+      </a>
+      <div class="flex items-center justify-between">
+        <p class="sc-price">$${p.price}</p>
+        <button type="button" class="nnny-remove link-sweep" data-add-to-cart="${p.id}" style="color:#18181b" aria-label="Add ${p.name} to bag">Add +</button>
+      </div>
+    </div>`;
+  }
+
+  function emptyHTML() {
+    const picks = PRODUCTS.slice(0, 2);
+    return `
+    <div class="nnny-empty">
+      <p class="nnny-empty-msg">Nothing <span class="font-serif-italic">travelling</span><br>with you yet.</p>
+      <p class="nnny-empty-note">Find something worth carrying between two worlds.</p>
+      <a href="#/shop" class="nnny-empty-cta link-sweep" data-cart-close>Explore the products ${arrowSvg}</a>
+    </div>
+    <div class="nnny-suggest">
+      <p class="nnny-suggest-h">A good place to start</p>
+      <div class="nnny-suggest-grid">${picks.map(suggestCard).join('')}</div>
+    </div>`;
+  }
+
+  function render() {
+    const c = count();
+    objCountEl.textContent = pad2(c) + ' ' + (c === 1 ? 'Product' : 'Products');
+    if (c === 0) {
+      scrollEl.innerHTML = emptyHTML();
+      footEl.hidden = true;
+      footEl.innerHTML = '';
+    } else {
+      scrollEl.innerHTML = shippingHTML() + lines().map(itemHTML).join('');
+      footEl.hidden = false;
+      footEl.innerHTML = footerHTML();
+    }
+    updateHeader();
+  }
+
+  function updateHeader() {
+    const c = count();
+    badges().forEach(b => {
+      b.textContent = pad2(c);
+      b.classList.toggle('is-shown', c > 0);
+    });
+    triggers().forEach(t => t.setAttribute('aria-label', c > 0 ? `Open bag, ${c} product${c === 1 ? '' : 's'}` : 'Open bag'));
+  }
+
+  /* ---------------- mutations ---------------- */
+  function add(id) {
+    if (!byId(id)) return;
+    const ln = state.find(i => i.id === id);
+    if (ln) ln.qty = Math.min(99, ln.qty + 1);
+    else state.push({ id, qty: 1 });
+    persist();
+    render();
+    pulse();
+    setTimeout(open, reduce ? 0 : CFG.OPEN_DELAY);
+  }
+  function setQty(id, delta) {
+    const ln = state.find(i => i.id === id);
+    if (!ln) return;
+    ln.qty += delta;
+    if (ln.qty <= 0) { animateRemove(id); return; }
+    ln.qty = Math.min(99, ln.qty);
+    persist();
+    render();
+  }
+  function animateRemove(id) {
+    const el = scrollEl.querySelector(`[data-line="${id}"]`);
+    const finish = () => { state = state.filter(i => i.id !== id); persist(); render(); };
+    if (!el || reduce) { finish(); return; }
+    el.style.maxHeight = el.offsetHeight + 'px';
+    requestAnimationFrame(() => { el.classList.add('is-removing'); el.style.maxHeight = '0px'; });
+    setTimeout(finish, 400);
+  }
+
+  /* ---------------- open / close + a11y ---------------- */
+  let lastFocus = null, scrollLockY = 0;
+  const isOpen = () => root.classList.contains('is-open');
+
+  function setCartTop() {
+    const h = document.querySelector('header');
+    const top = h ? Math.round(h.getBoundingClientRect().bottom + 8) : 84;
+    root.style.setProperty('--cart-top', top + 'px');
+  }
+  function focusables() {
+    return Array.from(panel.querySelectorAll('a[href],button:not([disabled]),input,[tabindex]:not([tabindex="-1"])'))
+      .filter(el => el.offsetParent !== null || el === panel);
+  }
+  function open() {
+    if (isOpen()) return;
+    lastFocus = document.activeElement;
+    setCartTop();
+    root.hidden = false;
+    // lock background scroll without shifting layout
+    scrollLockY = window.scrollY;
+    const sbw = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    if (sbw > 0) document.body.style.paddingRight = sbw + 'px';
+    requestAnimationFrame(() => {
+      root.classList.add('is-open');
+      triggers().forEach(t => t.setAttribute('aria-expanded', 'true'));
+      const f = root.querySelector('[data-cart-close]') || panel;
+      f.focus({ preventScroll: true });
+    });
+  }
+  function close() {
+    if (!isOpen()) return;
+    root.classList.remove('is-open');
+    triggers().forEach(t => t.setAttribute('aria-expanded', 'false'));
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    const done = () => { root.hidden = true; panel.removeEventListener('transitionend', done); };
+    if (reduce) done(); else panel.addEventListener('transitionend', done);
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+  }
+  function pulse() {
+    triggers().forEach(t => {
+      t.classList.remove('is-pulsing'); void t.offsetWidth; t.classList.add('is-pulsing');
+    });
+  }
+
+  /* ---------------- events ---------------- */
+  // add-to-cart — delegated so every card (incl. re-rendered shop filter) works
+  document.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('[data-add-to-cart]');
+    if (addBtn) {
+      e.preventDefault(); e.stopPropagation();
+      addBtn.classList.add('is-added');
+      setTimeout(() => addBtn.classList.remove('is-added'), 220);
+      add(addBtn.getAttribute('data-add-to-cart'));
+      return;
+    }
+    if (e.target.closest('[data-cart-trigger]')) { e.preventDefault(); isOpen() ? close() : open(); }
+  });
+
+  // interactions inside the cart
+  root.addEventListener('click', (e) => {
+    if (e.target.closest('[data-cart-overlay]')) { close(); return; }
+    if (e.target.closest('[data-cart-close]'))   { close(); return; }
+    const dec = e.target.closest('[data-dec]'); if (dec) { setQty(dec.closest('[data-line]').dataset.line, -1); return; }
+    const inc = e.target.closest('[data-inc]'); if (inc) { setQty(inc.closest('[data-line]').dataset.line, +1); return; }
+    const rm  = e.target.closest('[data-remove]'); if (rm) { animateRemove(rm.closest('[data-line]').dataset.line); return; }
+    if (e.target.closest('[data-checkout]')) {
+      // Integration point: forward the cart to Shopify checkout here.
+      document.dispatchEvent(new CustomEvent('nnny:checkout', { detail: { lines: lines(), subtotal: subtotalC() } }));
+      return;
+    }
+  });
+
+  // keyboard: Esc closes, Tab traps focus inside the panel
+  document.addEventListener('keydown', (e) => {
+    if (!isOpen()) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key === 'Tab') {
+      const f = focusables(); if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  window.addEventListener('resize', () => { if (isOpen()) setCartTop(); });
+
+  /* ---------------- boot ---------------- */
+  render();
+
+  // small public hook for future checkout wiring / debugging
+  window.NNNYCart = { add, open, close, state: () => state.slice(), subtotal: subtotalC, config: CFG };
+})();
+</script>
+
+<script>
+/* =====================================================================
+   Never Not New York — Our Story route thread
+   One continuous SVG path that travels the length of the Our Story page:
+   a subway-style line from Mumbai (top) to New York (bottom), with a stop
+   at every section. Geometry is generated from the real section positions
+   so it stays aligned across breakpoints, hugs the left gutter so it never
+   crosses text, and draws in as you scroll. Honours reduced-motion.
+   ===================================================================== */
+(function () {
+  const section = document.querySelector('[data-route="/about"]');
+  if (!section) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STOPS = ['origin', 'distance', 'cities', 'hands', 'people', 'why', 'products-story'];
+
+  const svg   = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'os-thread');
+  svg.setAttribute('aria-hidden', 'true');
+  const track  = document.createElementNS(NS, 'path'); track.setAttribute('class', 'thread-track');
+  const draw   = document.createElementNS(NS, 'path'); draw.setAttribute('class', 'thread-draw');
+  const gDots  = document.createElementNS(NS, 'g');
+  svg.append(track, draw, gDots);
+  section.prepend(svg);
+
+  let len = 0, built = false, dots = [], drawTop = 0;
+
+  // How much clear space a section has on its left, in px from the section's edge.
+  function measure() {
+    const W = section.clientWidth, H = section.scrollHeight;
+    if (!W || H < 40) return null;                        // hidden route → skip
+    const cx = W / 2;
+    const amp = Math.min(W * 0.28, W / 2 - 12, 360);      // how far it swings from centre
+    const waves = 3;                                      // gentle S-crossings down the page
+    const xAt = (y) => cx + amp * Math.sin((y / H) * Math.PI * waves);
+
+    const hero = document.getElementById('origin');       // start below the story hero image
+    const startY = hero ? (hero.offsetTop + hero.offsetHeight) : 0;
+
+    const pts = [{ x: xAt(startY), y: startY, kind: 'end' }];   // begins just below the hero
+    STOPS.forEach(id => {
+      const el = document.getElementById(id); if (!el) return;
+      const y = el.offsetTop + Math.min(70, el.offsetHeight * 0.18);
+      if (y <= startY) return;                             // hide any stop inside/above the hero
+      pts.push({ x: xAt(y), y, kind: 'stop' });
+    });
+    pts.push({ x: cx, y: H, kind: 'end' });               // exits at centre-bottom (New York)
+    return { W, H, pts, startY };
+  }
+
+  function toPath(pts) {                                  // smooth vertical S between points
+    let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i], dy = b.y - a.y;
+      d += ` C ${a.x.toFixed(1)} ${(a.y + dy * 0.5).toFixed(1)}, ${b.x.toFixed(1)} ${(b.y - dy * 0.5).toFixed(1)}, ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+    }
+    return d;
+  }
+
+  function build() {
+    const m = measure();
+    if (!m) { built = false; return; }
+    const { W, H, pts, startY } = m;
+    drawTop = startY || 0;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const d = toPath(pts);
+    track.setAttribute('d', d); draw.setAttribute('d', d);
+
+    const span = (H - drawTop) || 1;
+    gDots.textContent = ''; dots = [];
+    pts.forEach(p => {
+      if (p.kind !== 'stop') return;
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', p.x.toFixed(1)); c.setAttribute('cy', p.y.toFixed(1));
+      c.setAttribute('r', '3.4'); c.setAttribute('class', 'stn');
+      c.dataset.yf = ((p.y - drawTop) / span).toFixed(4);
+      gDots.appendChild(c); dots.push(c);
+    });
+
+    len = (typeof draw.getTotalLength === 'function') ? (() => { try { return draw.getTotalLength(); } catch (e) { return H; } })() : H;
+    draw.style.strokeDasharray = len;
+    built = true;
+    update();
+  }
+
+  function update() {
+    if (!built) return;
+    if (reduce) { draw.style.strokeDashoffset = 0; dots.forEach(c => c.classList.add('on')); return; }
+    if (!section.classList.contains('is-active')) return;
+    const H = section.scrollHeight || 1;
+    const viewMid = window.scrollY + window.innerHeight * 0.62;
+    let prog = (viewMid - section.offsetTop - drawTop) / ((H - drawTop) || 1);
+    prog = Math.max(0, Math.min(1, prog));
+    draw.style.strokeDashoffset = (len * (1 - prog)).toFixed(1);
+    dots.forEach(c => c.classList.toggle('on', prog >= parseFloat(c.dataset.yf) - 0.015));
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(() => { update(); ticking = false; }); ticking = true; }
+  }, { passive: true });
+
+  let rt;
+  const rebuild = () => { clearTimeout(rt); rt = setTimeout(build, 120); };
+  if ('ResizeObserver' in window) new ResizeObserver(rebuild).observe(section);
+  else window.addEventListener('resize', rebuild);
+  window.addEventListener('hashchange', () => setTimeout(build, 60));
+  window.addEventListener('load', build);
+  if (document.readyState !== 'loading') build();
+})();
+</script>
+
+<!-- hero image auto-carousel -->
+<script>
+(function () {
+  const el = document.getElementById('hero-carousel');
+  if (!el) return;
+  const slides = Array.prototype.slice.call(el.querySelectorAll('.hc-slide'));
+  const dotsWrap = document.getElementById('hero-dots');
+  if (slides.length < 2) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0, timer = null;
+
+  // build dots
+  const dots = slides.map(function (_, idx) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-label', 'Show image ' + (idx + 1));
+    if (idx === 0) b.classList.add('is-active');
+    b.addEventListener('click', function () { goTo(idx); restart(); });
+    dotsWrap.appendChild(b);
+    return b;
+  });
+
+  function goTo(n) {
+    slides[i].classList.remove('is-active'); dots[i].classList.remove('is-active');
+    i = (n + slides.length) % slides.length;
+    slides[i].classList.add('is-active'); dots[i].classList.add('is-active');
+  }
+  function start() { if (!reduce) timer = setInterval(function () { goTo(i + 1); }, 3500); }
+  function restart() { clearInterval(timer); start(); }
+  start();
+})();
+</script>
+
+</body>
+</html>
